@@ -1,5 +1,4 @@
 ﻿using DemoProgressBarAPI.Hubs;
-using Microsoft.AspNet.SignalR.Messaging;
 using Microsoft.AspNetCore.SignalR;
 
 namespace DemoProgressBarAPI.Services

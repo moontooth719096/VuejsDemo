@@ -1,8 +1,5 @@
 ﻿using DemoProgressBarAPI.Models.ChatRoom;
-using Microsoft.AspNet.SignalR.Infrastructure;
-using Microsoft.AspNet.SignalR.Messaging;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 
 namespace DemoProgressBarAPI.Hubs
 {
