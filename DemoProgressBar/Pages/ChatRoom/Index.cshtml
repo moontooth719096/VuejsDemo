@@ -1,57 +1,39 @@
 ﻿@page
 @model DemoProgressBar.Pages.ChatRoom.IndexModel
 
-<div id="app">
-    <div class="card-body m-0 p-0 overflow-auto" :model="chatlist">
-        <div class="row d-flex flex-row m-0" style="height:100%">
-        <div id="UsersBoard" class="p-0 m-0" style="width:25%">
-            <div class="card border border-2" style="height:100%">
-                <div class="card-header" style="min-height:8vh;height:8vh">
-                    {{connectionid}}
-                </div>
-                    <div class="d-flex flex-row align-items-center border-bottom border-1 text-truncate" style="min-height:9vh" v-for="user in chatlist">
-                        <img class="img-thumbnail rounded-circle p-0 m-0" style="width:30%" src="https://storage.googleapis.com/www-cw-com-tw/article/201810/article-5bd182cf13ebb.jpg" alt="...">
-                        <span class="fs-6 d-none d-md-block" style="width:auto">aaa</span>@* {{user.connectionID}} *@
-                        <span class="d-md-block badge bg-primary rounded-pill d-none d-md-block" style="width:10%">14</span>
-                    </div>
-                </div>
-                <div class="card-footer" style="min-height:8vh;height:8vh">
-                    {{connectionid}}
+<div id="app" class="d-flex flex-row">
+    <div id="UsersBoard" class="usersboard">
+        <div class="card border border-2">
+            <div class="card-header">
+                @* {{connectionid}} *@
+            </div>
+            <div class="card-body p-0 overflow-auto" :model="chatlist">
+                <div class="useritem d-flex flex-row border-bottom border-1 border-dark text-truncate " v-bind:class="{'active':user.connectionID === nowtalkid}" v-for="user in chatlist" @@click="talkselect(user.connectionID)">
+                    <img class="userpic img-thumbnail rounded-circle" src="https://storage.googleapis.com/www-cw-com-tw/article/201810/article-5bd182cf13ebb.jpg">
+                    <span class="username fs-6 d-none d-md-block">aaa</span>
+                    <span class="unreadcount d-md-block badge bg-primary rounded-pill d-none d-md-block">14</span>
                 </div>
             </div>
-            @*  <ul class="list-group" :model="chatlist">
-            <li class="list-group-item d-flex justify-content-between align-items-center m-0 p-0" v-bind:class="{'active':user.connectionID === nowtalkid}" style="height:9vh" v-for="user in chatlist" @@click="talkselect(user.connectionID)">
-            @* <div class="col-sm-2 bd-highlight"><img src="https://storage.googleapis.com/www-cw-com-tw/article/201810/article-5bd182cf13ebb.jpg" class="rounded-circle" style="width:50px;height:50px" alt="..."></div> *@
-            @* <div class="col-sm-8 flex-grow-1 ms-3 m-0 p-0">
-            {{user.connectionID}}
-            <small>aaaaa</small>
-            </div> *@
-            @*  <div class="p-2 bd-highlight"><img src="https://storage.googleapis.com/www-cw-com-tw/article/201810/article-5bd182cf13ebb.jpg" class="rounded img-thumbnail" alt="..."></div>
-            <div class="p-2 bd-highlight">Flex item 2</div> *@
-            @* <span class="col-sm-1 d-md-block badge bg-primary rounded-pill">14</span> *@
-            @*  </li>
-            </ul>  *@
+            <div class="card-footer">
+                @* {{connectionid}} *@
+            </div>
         </div>
-        <div id="TalkBoard" class="p-0 m-0" style="width:70%">
-            <div class="card border border-2 m-0 p-0" style="height:100%">
-                <div class="card-header" style="min-height:8vh;height:8vh">
-                    {{connectionid}}
+    </div>
+    <div id="TalkBoard" class="talkboard">
+        <div class="card border border-2">
+            <div class="card-header">
+                {{connectionid}}
+            </div>
+            <div class="card-body overflow-auto" ref="scrollContainer" :model="nowtalk">
+                <div class="d-flex" v-bind:class="text.talkid == connectionid? 'justify-content-end':'justify-content-start'" v-for="text in nowtalk">
+                    <p class="talkboard-body border border-1 rounded rounded-2  badge fs-6 text-wrap text-start"
+                       v-bind:class="text.talkid == connectionid? 'bg-success':'bg-light text-dark'">
+                        {{text.message}}
+                    </p>
                 </div>
-                <div class="card-body overflow-auto" ref="scrollContainer" :model="nowtalk" style="height:100%">
-                    <div class="d-flex" v-bind:class="text.talkid == connectionid? 'justify-content-end':'justify-content-start'" v-for="text in nowtalk">
-                        <p class="border border-1 rounded rounded-2  badge fs-6 text-wrap text-start"
-                           style="max-width:45vw"
-                           v-bind:class="text.talkid == connectionid? 'bg-success':'bg-light text-dark'">
-                            {{text.message}}
-                        </p>
-                    </div>
-                </div>
-                <div class="card-footer align-items-center" style="min-height:8vh;height:8vh">
-                    <input class="form-control col-10" @@keydown.enter.native="sendmessage" v-model="keyonmessage" v-bind:disabled="!nowtalkid" />
-                    @* <div class=" border border-start-0 border-dark border-2 m-0 p-0" style="height:8vh">
-
-                    </div> *@
-                </div>
+            </div>
+            <div class="card-footer align-items-center">
+                <input class="form-control" @@keydown.enter.native="sendmessage" v-model="keyonmessage" v-bind:disabled="!nowtalkid" />
             </div>
         </div>
     </div>

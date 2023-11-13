@@ -1,0 +1,60 @@
+﻿#app {
+    height: 100%;
+
+    .usersboard {
+        width: 25%;
+        min-width: 50px;
+
+        .card {
+            height: 100%;
+
+            .card-header, .card-footer {
+                /*min-height: 10%;*/
+                height: 8vh;
+            }
+
+            .card-body {
+                .useritem {
+                    cursor: pointer;
+
+                    .userpic {
+                        width: 30%;
+                    }
+
+                    .username {
+                        width: 60%;
+                    }
+
+                    .unreadcount {
+                        width: 10%;
+                        height: 50%
+                    }
+                }
+            }
+        }
+    }
+
+    .talkboard {
+        width: 75%;
+
+        .card {
+            height: 100%;
+
+            .card-header, .card-footer {
+                min-height: 20%;
+                min-height: 8vh;
+                height: 8vh;
+            }
+
+            .card-body {
+                height: 100%;
+
+
+
+                .talkboard-body {
+                    max-width: 45vw
+                }
+            }
+        }
+    }
+}

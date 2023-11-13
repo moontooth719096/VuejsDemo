@@ -1,24 +1,27 @@
 ﻿* {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0
 }
 
 html {
-  position: relative;
+    position: relative;
+    header{
+        height:auto;
+    }
+    body {
+        height: 87vh;
+    }
 }
-html header {
-  height: auto;
-}
-html body {
-  height: 87vh;
-}
+
 
 @media (min-width: 768px) {
   html {
     font-size: 16px;
   }
 }
+
 /*html {
   position: relative;
   min-height: 100%;
 }*/
+
