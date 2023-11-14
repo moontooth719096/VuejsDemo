@@ -57,6 +57,9 @@
                 //判斷使用者清單沒有這個人就加上
                 if (user == null || user == undefined) {
                     self.chatlist.push(senduser);
+                } else {
+                    if (self.nowtalkid != user.connectionID)
+                        user.noReadCount = user.noReadCount+1;
                 }
 
                 //將收到的訊息加到對話清單裡
@@ -72,6 +75,13 @@
         //設定要聊天的人
         talkselect(selectid) {
             this.nowtalkid = selectid;
+            let nowusers = this.chatlist;
+            let user = _.find(nowusers, function (o) { return o.connectionID == selectid });
+            //判斷使用者清單沒有這個人就加上
+            if (user != null && user != undefined) {
+                if (user.noReadCount>0)
+                    user.noReadCount = 0;
+            }
         },
         //發送訊息
         sendmessage() {

@@ -28,6 +28,9 @@
 #app .usersboard .card .card-body .useritem.active, #app .usersboard .card .card-body .useritem:hover {
   background-color: lightskyblue;
 }
+#app .talkboard {
+  height: 100%;
+}
 #app .talkboard .card {
   height: 100%;
 }
@@ -38,6 +41,9 @@
 #app .talkboard .card .card-body {
   height: 100%;
 }
-#app .talkboard .card .card-body .talkboard-body {
-  max-width: 45vw;
+#app .talkboard .card .card-body .card-body {
+  height: 100%;
+  /*.talkboard-body {
+      max-width: 45vw
+  }*/
 }

@@ -31,8 +31,8 @@
                     }
 
                     &.active,
-                    &:hover{
-                        background-color:lightskyblue
+                    &:hover {
+                        background-color: lightskyblue
                     }
                 }
             }
@@ -40,6 +40,8 @@
     }
 
     .talkboard {
+        height: 100%;
+
         .card {
             height: 100%;
 
@@ -51,8 +53,12 @@
             .card-body {
                 height: 100%;
 
-                .talkboard-body {
-                    max-width: 45vw
+
+                .card-body {
+                    height: 100%;
+                    /*.talkboard-body {
+                        max-width: 45vw
+                    }*/
                 }
             }
         }

@@ -5,7 +5,7 @@
     <div id="UsersBoard" class="usersboard col-3">
         <div class="card border border-2">
             <div class="card-header">
-                @* {{connectionid}} *@
+                {{connectionid}}
             </div>
             <div class="card-body p-0 overflow-auto" :model="chatlist">
                 <div class="useritem row g-0 border rounded-2 p-1" v-bind:class="{'active':user.connectionID === nowtalkid}" v-for="user in chatlist" @@click="talkselect(user.connectionID)">
@@ -13,7 +13,7 @@
                     <span class="message col-auto me-auto m-1 fs-6 d-none d-md-block">aaa</span>
                     <div class="otherinfo col-2 d-md-block d-none d-md-block position-relative">
                         @* <span class="noread position-absolute top-50 start-50 translate-middle badge bg-primary rounded-pill" style="text-align: center; display:block">14</span> *@
-                        <span class="badge bg-primary rounded-pill position-absolute top-50 start-50 translate-middle noread">99+</span>
+                        <span class="badge bg-primary rounded-pill position-absolute top-50 start-50 translate-middle noread" v-if="user.noReadCount>0">{{user.noReadCount}}</span>
                     </div>
                 </div>
             </div>
@@ -25,7 +25,7 @@
     <div id="TalkBoard" class="talkboard col-9">
         <div class="card border border-2">
             <div class="card-header">
-                {{connectionid}}
+                
             </div>
             <div class="card-body overflow-auto" ref="scrollContainer" :model="nowtalk">
                 <div class="d-flex" v-bind:class="text.talkid == connectionid? 'justify-content-end':'justify-content-start'" v-for="text in nowtalk">
