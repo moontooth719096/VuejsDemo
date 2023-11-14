@@ -15,7 +15,7 @@ html body {
        }*/
 }
 html body .container-fluid {
-  height: 85%;
+  height: 100%;
 }
 html body .container-fluid main {
   height: 100%;

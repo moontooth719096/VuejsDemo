@@ -1,8 +1,10 @@
 ﻿#app {
   height: 100%;
+  width: 100%;
 }
 #app .usersboard {
   height: 100%;
+  max-width: 270px;
 }
 #app .usersboard .card {
   height: 100%;
@@ -11,6 +13,7 @@
 #app .usersboard .card .card-header, #app .usersboard .card .card-footer {
   height: 8vh;
   min-height: 50px;
+  max-height: 70px;
 }
 #app .usersboard .card .card-body {
   height: 100%;
@@ -25,7 +28,10 @@
 #app .usersboard .card .card-body .useritem .otherinfo .noread {
   font-size: 0.7rem;
 }
-#app .usersboard .card .card-body .useritem.active, #app .usersboard .card .card-body .useritem:hover {
+#app .usersboard .card .card-body .useritem.active {
+  background-color: dodgerblue;
+}
+#app .usersboard .card .card-body .useritem:hover {
   background-color: lightskyblue;
 }
 #app .talkboard {
@@ -37,6 +43,7 @@
 #app .talkboard .card .card-header, #app .talkboard .card .card-footer {
   height: 8vh;
   min-height: 50px;
+  max-height: 70px;
 }
 #app .talkboard .card .card-body {
   height: 100%;

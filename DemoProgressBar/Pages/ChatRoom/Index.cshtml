@@ -1,8 +1,8 @@
 ﻿@page
-@model DemoProgressBar.Pages.ChatRoom.IndexModel
+@*@model DemoProgressBar.Pages.ChatRoom.IndexModel*@
 
 <div id="app" class="row g-0">
-    <div id="UsersBoard" class="usersboard col-3">
+    <div id="UsersBoard" class="usersboard col-12 col-md-2 flex-grow-0">
         <div class="card border border-2">
             <div class="card-header">
                 {{connectionid}}
@@ -22,7 +22,7 @@
             </div>
         </div>
     </div>
-    <div id="TalkBoard" class="talkboard col-9">
+    <div id="TalkBoard" class="talkboard col flex-grow-1">
         <div class="card border border-2">
             <div class="card-header">
                 

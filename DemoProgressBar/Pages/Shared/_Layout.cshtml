@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DemoProgressBar.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
+<body class="row">
+    <header class="row">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">DemoProgressBar</a>
@@ -33,7 +33,7 @@
             </div>
         </nav>
     </header>
-    <div class="container-fluid">
+    <div class="container-fluid row">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
