@@ -1,17 +1,20 @@
 ﻿@page
 @model DemoProgressBar.Pages.ChatRoom.IndexModel
 
-<div id="app" class="d-flex flex-row">
-    <div id="UsersBoard" class="usersboard">
+<div id="app" class="row g-0">
+    <div id="UsersBoard" class="usersboard col-3">
         <div class="card border border-2">
             <div class="card-header">
                 @* {{connectionid}} *@
             </div>
             <div class="card-body p-0 overflow-auto" :model="chatlist">
-                <div class="useritem d-flex flex-row border-bottom border-1 border-dark text-truncate " v-bind:class="{'active':user.connectionID === nowtalkid}" v-for="user in chatlist" @@click="talkselect(user.connectionID)">
-                    <img class="userpic img-thumbnail rounded-circle" src="https://storage.googleapis.com/www-cw-com-tw/article/201810/article-5bd182cf13ebb.jpg">
-                    <span class="username fs-6 d-none d-md-block">aaa</span>
-                    <span class="unreadcount d-md-block badge bg-primary rounded-pill d-none d-md-block">14</span>
+                <div class="useritem row g-0 border rounded-2 p-1" v-bind:class="{'active':user.connectionID === nowtalkid}" v-for="user in chatlist" @@click="talkselect(user.connectionID)">
+                    <img class="pic col-12 col-md-3 img-thumbnail rounded-circle p-1" src="https://storage.googleapis.com/www-cw-com-tw/article/201810/article-5bd182cf13ebb.jpg">
+                    <span class="message col-auto me-auto m-1 fs-6 d-none d-md-block">aaa</span>
+                    <div class="otherinfo col-2 d-md-block d-none d-md-block position-relative">
+                        @* <span class="noread position-absolute top-50 start-50 translate-middle badge bg-primary rounded-pill" style="text-align: center; display:block">14</span> *@
+                        <span class="badge bg-primary rounded-pill position-absolute top-50 start-50 translate-middle noread">99+</span>
+                    </div>
                 </div>
             </div>
             <div class="card-footer">
@@ -19,7 +22,7 @@
             </div>
         </div>
     </div>
-    <div id="TalkBoard" class="talkboard">
+    <div id="TalkBoard" class="talkboard col-9">
         <div class="card border border-2">
             <div class="card-header">
                 {{connectionid}}

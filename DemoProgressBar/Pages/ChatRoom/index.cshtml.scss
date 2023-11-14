@@ -2,32 +2,37 @@
     height: 100%;
 
     .usersboard {
-        width: 25%;
-        min-width: 50px;
+        height: 100%;
 
         .card {
             height: 100%;
+            width: 100%;
 
             .card-header, .card-footer {
-                /*min-height: 10%;*/
                 height: 8vh;
+                min-height: 50px;
             }
 
             .card-body {
+                height: 100%;
+
                 .useritem {
                     cursor: pointer;
 
-                    .userpic {
-                        width: 30%;
+                    .pic {
+                        min-width: 60px;
+                        min-height: 60px;
                     }
 
-                    .username {
-                        width: 60%;
+                    .otherinfo {
+                        .noread {
+                            font-size: 0.7rem;
+                        }
                     }
 
-                    .unreadcount {
-                        width: 10%;
-                        height: 50%
+                    &.active,
+                    &:hover{
+                        background-color:lightskyblue
                     }
                 }
             }
@@ -35,21 +40,16 @@
     }
 
     .talkboard {
-        width: 75%;
-
         .card {
             height: 100%;
 
             .card-header, .card-footer {
-                min-height: 20%;
-                min-height: 8vh;
                 height: 8vh;
+                min-height: 50px;
             }
 
             .card-body {
                 height: 100%;
-
-
 
                 .talkboard-body {
                     max-width: 45vw
