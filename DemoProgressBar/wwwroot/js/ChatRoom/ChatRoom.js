@@ -56,14 +56,18 @@
                 let user = _.find(nowusers, function (o) { return o.connectionID == senduser.connectionID });
                 //判斷使用者清單沒有這個人就加上
                 if (user == null || user == undefined) {
+                    senduser.lastMesage = message;
                     self.chatlist.push(senduser);
                 } else {
                     if (self.nowtalkid != user.connectionID)
-                        user.noReadCount = user.noReadCount+1;
+                        user.noReadCount = user.noReadCount + 1;
+                    user.lastMesage = message;
                 }
 
                 //將收到的訊息加到對話清單裡
                 self.addTalk(senduser.connectionID, senduser.connectionID, message);
+
+                
 
                 //判斷目前沒有選擇跟任何人聊天,就給目前私訊你的人
                 if (self.nowtalkid == null || self.nowtalkid == undefined) {

@@ -9,24 +9,25 @@ html {
     height:100%;
     body {
         height:100%;
-   /*     header {
-            height:auto;
-        }*/
-
-        .container-fluid {
-            height: 100%;
-            main{
-                height:100%;
-            }
-        }
     }
 }
 
+@mixin pad {
+    @media(max-width:768px) {
+        @content;
+    }
+}
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+@mixin mobile {
+    @media(max-width:375px) {
+        @content;
+    }
+}
+
+html {
+    @include pad {
+        font-size: 16px;
+    }
 }
 
 /*html {

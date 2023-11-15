@@ -10,22 +10,14 @@ html {
 }
 html body {
   height: 100%;
-  /*     header {
-           height:auto;
-       }*/
-}
-html body .container-fluid {
-  height: 100%;
-}
-html body .container-fluid main {
-  height: 100%;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
   html {
     font-size: 16px;
   }
 }
+
 /*html {
   position: relative;
   min-height: 100%;

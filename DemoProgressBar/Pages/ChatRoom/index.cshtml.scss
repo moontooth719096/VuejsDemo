@@ -1,29 +1,38 @@
-﻿#app {
-    height: 100%;
-    width:100%;
+﻿@mixin card-hfset {
+    height: 8vh;
+    min-height: 50px;
+    max-height: 70px;
+}
+
+@mixin pad {
+    @media(max-width:768px) {
+        @content;
+    }
+}
+
+#app {
+
     .usersboard {
-        height: 100%;
-        max-width: 270px;
+        /*max-width: 270px;*/
+        min-width: 300px;
+
+        @include pad {
+            min-width: 60px;
+        }
 
         .card {
-            height: 100%;
-            width: 100%;
 
             .card-header, .card-footer {
-                height: 8vh;
-                min-height: 50px;
-                max-height: 70px;
+                @include card-hfset;
             }
 
             .card-body {
-                height: 100%;
 
                 .useritem {
                     cursor: pointer;
 
-                    .pic {
-                        min-width: 60px;
-                        min-height: 60px;
+                    .item-center {
+                        font-size: 0.5rem;
                     }
 
                     .otherinfo {
@@ -45,26 +54,11 @@
     }
 
     .talkboard {
-        height: 100%;
+
         .card {
-            height: 100%;
 
             .card-header, .card-footer {
-                height: 8vh;
-                min-height: 50px;
-                max-height: 70px;
-            }
-
-            .card-body {
-                height: 100%;
-
-
-                .card-body {
-                    height: 100%;
-                    /*.talkboard-body {
-                        max-width: 45vw
-                    }*/
-                }
+                @include card-hfset;
             }
         }
     }
