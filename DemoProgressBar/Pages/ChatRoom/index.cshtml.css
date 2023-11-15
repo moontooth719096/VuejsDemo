@@ -1,10 +1,13 @@
-﻿#app .usersboard {
+﻿#app {
+  font-size: 16px;
+}
+#app .usersboard {
   /*max-width: 270px;*/
-  min-width: 300px;
+  max-width: 300px;
 }
 @media (max-width: 768px) {
   #app .usersboard {
-    min-width: 60px;
+    max-width: 60px;
   }
 }
 #app .usersboard .card .card-header, #app .usersboard .card .card-footer {
@@ -16,7 +19,7 @@
   cursor: pointer;
 }
 #app .usersboard .card .card-body .useritem .item-center {
-  font-size: 0.5rem;
+  font-size: 0.7rem;
 }
 #app .usersboard .card .card-body .useritem .otherinfo .noread {
   font-size: 0.7rem;
