@@ -2,23 +2,30 @@
 @*@model DemoProgressBar.Pages.ChatRoom.IndexModel*@
 
 <div id="app" class="row g-0 ">
-    <div id="UsersBoard" class="usersboard col-1 col-md-3 d-flex flex-column">
+    <div id="UsersBoard" class="usersboard col-1 col-md-3">
         <div class="card d-flex flex-column h-100">
             <div class="card-header">
                 {{connectionid}}
             </div>
             <div class="card-body p-0 overflow-auto flex-grow-1" :model="chatlist">
-                <div class="useritem row g-0 border rounded-2 p-1" v-bind:class="{'active':user.connectionID === nowtalkid}" v-for="user in chatlist" @@click="talkselect(user.connectionID)">
+                <div class="useritem row g-0 border rounded-2 p-1"
+                     v-bind:class="{'active':user.connectionID === nowtalkid}"
+                     v-for="user in chatlist" @@click="talkselect(user.connectionID)">
+
                     <img class="item-pic col-12 col-md-3 img-thumbnail rounded-circle border-1 p-1" :src="user.imgPath">
-                    <div class="item-center col-7 col-md-7 m-0 d-none d-md-block">
-                       
-                        <strong class="text-truncate">{{user.connectionID}}</strong>
-                        <small class="text-truncate">{{user.lastMesage}}</small>
+                    
+                    <div class="item-center col-7 col-md-7 m-0 p-2 d-none d-md-block align-items-center">
+                        <strong class="d-block text-truncate">{{user.connectionID}}</strong>
+                        <small class="d-block text-truncate">{{user.lastMesage}}</small>
                     </div>
+
                     <div class="otherinfo col-2 col-md-2 d-none d-md-block position-relative">
-                        @* <span class="noread position-absolute top-50 start-50 translate-middle badge bg-primary rounded-pill" style="text-align: center; display:block">14</span> *@
-                        <span class="badge bg-primary rounded-pill position-absolute top-50 start-50 translate-middle noread" v-if="user.noReadCount>0">{{user.noReadCount}}</span>
+                        <span class="badge bg-primary rounded-pill position-absolute top-50 start-50 translate-middle noread" 
+                              v-if="user.noReadCount>0">
+                              {{user.noReadCount}}
+                        </span>
                     </div>
+
                 </div>
             </div>
             <div class="card-footer mt-auto">
@@ -26,15 +33,17 @@
             </div>
         </div>
     </div>
-    <div id="TalkBoard" class="talkboard col d-flex flex-column">
+    <div id="TalkBoard" class="talkboard col">
         <div class="card d-flex flex-column h-100">
             <div class="card-header">
                 
             </div>
             <div class="card-body overflow-auto flex-grow-1" ref="scrollContainer" :model="nowtalk">
-                <div class="d-flex" v-bind:class="text.talkid == connectionid? 'justify-content-end':'justify-content-start'" v-for="text in nowtalk">
-                    <p class="talkboard-body border border-1 rounded rounded-2  badge fs-6 text-wrap text-start"
-                       v-bind:class="text.talkid == connectionid? 'bg-success':'bg-light text-dark'">
+                <div class="d-flex mb-2" v-bind:class="text.talkid == connectionid? 'flex-row-reverse':' flex-row'" v-for="text in nowtalk">
+                    <img class="img-thumbnail border-1" src="https://fakeimg.pl/50/">
+
+                    <p class="talkboard-body border-1 rounded-2 p-1 mx-2 my-auto text-wrap text-start flex-md-column align-self-center"
+                       v-bind:class="text.talkid == connectionid? 'messageself':'messageorther'">
                         {{text.message}}
                     </p>
                 </div>
@@ -49,13 +58,13 @@
 @section Scripts{
     <script src="~/js/chatroom/chatroom.js" asp-append-version="true"></script>
     <script>
-        // 在窗口大小变化时，动态设置 .talkboard 的高度
+        // 在窗口大小改變時 動態設定聊天室窗的高度與寬度
         window.addEventListener('resize', function () {
             setTalkboardHeight();
             setTalkboardWidth();
         });
 
-        // 页面加载时设置初始高度
+        // 頁面載入時，動態設定聊天室窗的高度與寬度
         window.addEventListener('load', function () {
             setTalkboardHeight();
             setTalkboardWidth();

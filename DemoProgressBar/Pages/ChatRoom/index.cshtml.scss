@@ -10,14 +10,21 @@
     }
 }
 
+
+
+
+
+
+
 #app {
-    font-size:16px;
+    font-size: 16px;
+
     .usersboard {
         /*max-width: 270px;*/
         max-width: 300px;
 
         @include pad {
-            max-width: 60px;
+            min-width: 80px;
         }
 
         .card {
@@ -27,12 +34,15 @@
             }
 
             .card-body {
+                min-width: 80px;
+
+
 
                 .useritem {
                     cursor: pointer;
 
                     .item-center {
-                        font-size: 0.7rem;
+                        font-size: 0.9rem;
                     }
 
                     .otherinfo {
@@ -54,11 +64,32 @@
     }
 
     .talkboard {
+        min-width: 80px;
 
         .card {
 
             .card-header, .card-footer {
                 @include card-hfset;
+            }
+
+            .card-body {
+                .talkboard-body {
+                    max-width: 45%;
+                    height: auto;
+                    font-size: 1rem;
+                }
+
+                .messageself {
+                    background-color: springgreen;
+                }
+
+                .messageorther {
+                    background-color: floralwhite;
+                }
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
             }
         }
     }
