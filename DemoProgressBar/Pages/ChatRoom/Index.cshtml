@@ -4,8 +4,9 @@
 <div id="app" class="row g-0 ">
     <div id="UsersBoard" class="usersboard col-1 col-md-3">
         <div class="card d-flex flex-column h-100">
-            <div class="card-header">
-                {{connectionid}}
+            <div class="card-header p-0 ps-1 d-flex flex-row">
+                <img class="pic rounded-circle border-1 p-1" src="https://fakeimg.pl/30/">
+                <strong class="name text-truncate d-none d-md-block align-self-center"> {{connectionid}}</strong>
             </div>
             <div class="card-body p-0 overflow-auto flex-grow-1" :model="chatlist">
                 <div class="useritem row g-0 border rounded-2 p-1"

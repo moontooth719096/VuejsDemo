@@ -54,6 +54,7 @@
                 let nowusers = self.chatlist;
                 //抓取目前清單裡有沒有這個人
                 let user = _.find(nowusers, function (o) { return o.connectionID == senduser.connectionID });
+
                 //判斷使用者清單沒有這個人就加上
                 if (user == null || user == undefined) {
                     senduser.lastMesage = message;
@@ -95,6 +96,14 @@
                 alert('傳送錯誤: ' + err.toString());
                 return;
             });
+
+            let user = _.find(nowusers, function (o) { return o.connectionID == this.nowtalkid });
+
+            
+            if (user != null && user != undefined) {
+                user.lastMesage = message;
+            }
+
             this.addTalk(this.nowtalkid, this.connectionid, this.keyonmessage);
             // this.talklist.push({ talkid: this.nowtalkid, message: this.keyonmessage });
             this.keyonmessage = '';
