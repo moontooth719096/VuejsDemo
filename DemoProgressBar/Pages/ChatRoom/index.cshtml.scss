@@ -31,10 +31,10 @@
             }
 
             .card-header {
-                .userinfo{
-                    .pic{
-                        max-height:50px;
-                        max-width:50px;
+                .userinfo {
+                    .pic {
+                        max-height: 50px;
+                        max-width: 50px;
                     }
                 }
             }
@@ -79,6 +79,13 @@
             }
 
             .card-body {
+                .messagebar {
+                    .userimg{
+                        max-height:50px;
+                        max-width: 50px;
+                    }
+                }
+
                 .talkboard-body {
                     max-width: 45%;
                     height: auto;
@@ -90,7 +97,7 @@
                 }
 
                 .messageorther {
-                    background-color: floralwhite;
+                    background-color: lightgray;
                 }
 
                 &::-webkit-scrollbar {

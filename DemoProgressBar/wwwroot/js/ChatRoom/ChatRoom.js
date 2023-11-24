@@ -90,6 +90,8 @@
         },
         //發送訊息
         sendmessage() {
+            let nowusers = this.chatlist;
+            let nowtalk = this.nowtalkid;
             if (this.isWhiteSpace(this.keyonmessage))
                 return;
             this.signalRconnect.invoke("PrivateMessage", this.nowtalkid, this.keyonmessage).catch(function (err) {
@@ -97,11 +99,10 @@
                 return;
             });
 
-            let user = _.find(nowusers, function (o) { return o.connectionID == this.nowtalkid });
+            let user = _.find(nowusers, function (o) { return o.connectionID == nowtalk });
 
-            
             if (user != null && user != undefined) {
-                user.lastMesage = message;
+                user.lastMesage = this.keyonmessage;
             }
 
             this.addTalk(this.nowtalkid, this.connectionid, this.keyonmessage);

@@ -3,10 +3,10 @@
 
 <div id="app" class="row g-0 ">
     <div id="UsersBoard" class="usersboard col-1 col-md-3">
-        <div class="card d-flex flex-column h-100">
-            <div class="card-header p-0 ps-1 d-flex flex-row">
+        <div class="card d-flex p-0 flex-column h-100">
+            <div class="card-header p-0 d-flex flex-row justify-content-center">
                 <img class="pic rounded-circle border-1 p-1" src="https://fakeimg.pl/30/">
-                <strong class="name text-truncate d-none d-md-block align-self-center"> {{connectionid}}</strong>
+                <strong class="name col-0 text-truncate d-none d-md-block align-self-center"> {{connectionid}}</strong>
             </div>
             <div class="card-body p-0 overflow-auto flex-grow-1" :model="chatlist">
                 <div class="useritem row g-0 border rounded-2 p-1"
@@ -40,8 +40,8 @@
                 
             </div>
             <div class="card-body overflow-auto flex-grow-1" ref="scrollContainer" :model="nowtalk">
-                <div class="d-flex mb-2" v-bind:class="text.talkid == connectionid? 'flex-row-reverse':' flex-row'" v-for="text in nowtalk">
-                    <img class="img-thumbnail border-1" src="https://fakeimg.pl/50/">
+                <div class="messagebar d-flex mb-2" v-bind:class="text.talkid == connectionid? 'flex-row-reverse':' flex-row'" v-for="text in nowtalk">
+                    <img class="userimg img-thumbnail border-1" src="https://fakeimg.pl/50/">
 
                     <p class="talkboard-body border-1 rounded-2 p-1 mx-2 my-auto text-wrap text-start flex-md-column align-self-center"
                        v-bind:class="text.talkid == connectionid? 'messageself':'messageorther'">

@@ -45,6 +45,10 @@
   min-height: 50px;
   max-height: 70px;
 }
+#app .talkboard .card .card-body .messagebar .userimg {
+  max-height: 50px;
+  max-width: 50px;
+}
 #app .talkboard .card .card-body .talkboard-body {
   max-width: 45%;
   height: auto;
@@ -54,7 +58,7 @@
   background-color: springgreen;
 }
 #app .talkboard .card .card-body .messageorther {
-  background-color: floralwhite;
+  background-color: lightgray;
 }
 #app .talkboard .card .card-body::-webkit-scrollbar {
   display: none;
