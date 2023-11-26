@@ -34,7 +34,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors(builder =>
         builder
-        .WithOrigins("https://localhost:44318")
+        .WithOrigins("https://localhost:44318", "https://localhost:32768", "https://demoprogressbar.moon719096service.uk")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

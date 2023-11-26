@@ -13,7 +13,7 @@
     created() {
         var self = this;
         self.signalRconnect = new signalR.HubConnectionBuilder()
-            .withUrl('https://localhost:7068/ChatHub') // 你的 SignalR Hub 地址
+            .withUrl('https://demoprogressbarapi.moon719096service.uk/ChatHub') // 你的 SignalR Hub 地址
             .build();
         self.initSigmalR(self);
     },
