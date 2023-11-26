@@ -11,9 +11,13 @@
   }
 }
 #app .usersboard .card .card-header, #app .usersboard .card .card-footer {
-  height: 8vh;
+  height: 10vh;
   min-height: 50px;
   max-height: 70px;
+}
+#app .usersboard .card .card-header .userinfo .pic {
+  max-height: 50px;
+  max-width: 50px;
 }
 #app .usersboard .card .card-body {
   min-width: 80px;
@@ -37,9 +41,13 @@
   min-width: 80px;
 }
 #app .talkboard .card .card-header, #app .talkboard .card .card-footer {
-  height: 8vh;
+  height: 10vh;
   min-height: 50px;
   max-height: 70px;
+}
+#app .talkboard .card .card-body .messagebar .userimg {
+  max-height: 50px;
+  max-width: 50px;
 }
 #app .talkboard .card .card-body .talkboard-body {
   max-width: 45%;
@@ -50,7 +58,7 @@
   background-color: springgreen;
 }
 #app .talkboard .card .card-body .messageorther {
-  background-color: floralwhite;
+  background-color: lightgray;
 }
 #app .talkboard .card .card-body::-webkit-scrollbar {
   display: none;

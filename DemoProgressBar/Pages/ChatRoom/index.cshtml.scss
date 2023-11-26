@@ -1,5 +1,5 @@
 ﻿@mixin card-hfset {
-    height: 8vh;
+    height: 10vh;
     min-height: 50px;
     max-height: 70px;
 }
@@ -9,9 +9,6 @@
         @content;
     }
 }
-
-
-
 
 
 
@@ -31,6 +28,15 @@
 
             .card-header, .card-footer {
                 @include card-hfset;
+            }
+
+            .card-header {
+                .userinfo {
+                    .pic {
+                        max-height: 50px;
+                        max-width: 50px;
+                    }
+                }
             }
 
             .card-body {
@@ -73,6 +79,13 @@
             }
 
             .card-body {
+                .messagebar {
+                    .userimg{
+                        max-height:50px;
+                        max-width: 50px;
+                    }
+                }
+
                 .talkboard-body {
                     max-width: 45%;
                     height: auto;
@@ -84,7 +97,7 @@
                 }
 
                 .messageorther {
-                    background-color: floralwhite;
+                    background-color: lightgray;
                 }
 
                 &::-webkit-scrollbar {

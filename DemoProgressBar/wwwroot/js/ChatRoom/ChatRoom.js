@@ -54,6 +54,7 @@
                 let nowusers = self.chatlist;
                 //抓取目前清單裡有沒有這個人
                 let user = _.find(nowusers, function (o) { return o.connectionID == senduser.connectionID });
+
                 //判斷使用者清單沒有這個人就加上
                 if (user == null || user == undefined) {
                     senduser.lastMesage = message;
@@ -89,12 +90,21 @@
         },
         //發送訊息
         sendmessage() {
+            let nowusers = this.chatlist;
+            let nowtalk = this.nowtalkid;
             if (this.isWhiteSpace(this.keyonmessage))
                 return;
             this.signalRconnect.invoke("PrivateMessage", this.nowtalkid, this.keyonmessage).catch(function (err) {
                 alert('傳送錯誤: ' + err.toString());
                 return;
             });
+
+            let user = _.find(nowusers, function (o) { return o.connectionID == nowtalk });
+
+            if (user != null && user != undefined) {
+                user.lastMesage = this.keyonmessage;
+            }
+
             this.addTalk(this.nowtalkid, this.connectionid, this.keyonmessage);
             // this.talklist.push({ talkid: this.nowtalkid, message: this.keyonmessage });
             this.keyonmessage = '';
