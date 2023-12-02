@@ -8,12 +8,14 @@
             talklist: [],//聊天內容清單
             nowtalk: [],//當前聊天對象內容
             keyonmessage: '',//對話框輸入內容
+            config: window.appSettings,
         }
     },
     created() {
         var self = this;
         self.signalRconnect = new signalR.HubConnectionBuilder()
-            .withUrl('https://demoprogressbarapi.moon719096service.uk/ChatHub') // 你的 SignalR Hub 地址
+            .withUrl(self.config.ChatHubUrl) // 你的 SignalR Hub 地址
+            .withAutomaticReconnect()
             .build();
         self.initSigmalR(self);
     },
@@ -27,6 +29,15 @@
                 .catch((error) => {
                     console.error('SignalR 连接失败:', error);
                 });
+
+            //監聽上線者清單
+            self.signalRconnect.on("OnlineList", function (onlineusers) {
+                self.chatlist = onlineusers;
+                ////將新加入的使用者新增到聊天對象清單
+                //if (onlineuser.connectionID != self.connectionid)
+                //    self.chatlist.push(onlineuser);
+            });
+
             //監聽有使用者連線
             self.signalRconnect.on("UserConnected", function (onlineuser) {
                 //將新加入的使用者新增到聊天對象清單

@@ -11,15 +11,21 @@ namespace DemoProgressBarAPI.Hubs
         public override async Task OnConnectedAsync()
         {
             string nowUserid = Context.ConnectionId;
-            ChatUser user = new ChatUser
-            {
-                ConnectionID = nowUserid
-            };
-            _connectlist.Add(user);
 
-            await Clients.All.SendAsync("UserConnected", user);
+            if (!_connectlist.Any(x => x.ConnectionID == nowUserid))
+            {
+                ChatUser user = new ChatUser
+                {
+                    ConnectionID = nowUserid
+                };
+
+                await Clients.Client(nowUserid).SendAsync("OnlineList", _connectlist);
+
+                _connectlist.Add(user);
+                await Clients.All.SendAsync("UserConnected", user);
+            }
+         
             await base.OnConnectedAsync();
-            //await Clients.Client(nowUserid).SendAsync("OnlineUsers", JsonConvert.SerializeObject(_connectlist));
         }
 
         public override async Task OnDisconnectedAsync(Exception ex)
