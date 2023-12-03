@@ -12,6 +12,9 @@ namespace DemoProgressBarAPI.Hubs
         {
             string nowUserid = Context.ConnectionId;
 
+            List<ChatUser> nowonlineusers = new List<ChatUser>();
+            nowonlineusers.AddRange(_connectlist);
+
             if (!_connectlist.Any(x => x.ConnectionID == nowUserid))
             {
                 ChatUser user = new ChatUser
@@ -19,12 +22,14 @@ namespace DemoProgressBarAPI.Hubs
                     ConnectionID = nowUserid
                 };
 
-                await Clients.Client(nowUserid).SendAsync("OnlineList", _connectlist);
-
                 _connectlist.Add(user);
                 await Clients.All.SendAsync("UserConnected", user);
             }
-         
+
+            if (nowonlineusers != null && nowonlineusers.Count > 0)
+                await Clients.Client(nowUserid).SendAsync("OnlineList", nowonlineusers);
+
+
             await base.OnConnectedAsync();
         }
 

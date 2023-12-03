@@ -50,8 +50,9 @@
                     </p>
                 </div>
             </div>
-            <div class="card-footer align-items-center mt-auto">
-                <input class="form-control" @@keydown.enter.native="sendmessage" v-model="keyonmessage" v-bind:disabled="!nowtalkid" />
+            <div class="card-footer d-flex justify-content-center align-items-center mt-auto">
+                <input class="form-control flex-grow-1" type="text" @@keydown.enter.native="sendmessage" autocomplete="off" v-model="keyonmessage" v-bind:disabled="!nowtalkid" />
+                <button class="sendmsgbtn btn btn-primary" type="button" @@click="sendmessage" v-bind:disabled="!nowtalkid">送出</button>
             </div>
         </div>
     </div>
@@ -62,10 +63,8 @@
         var API_BASE='@Configuration["APIsetting:BaseUrl"]';
         var ChatHubUri= '@Configuration["APIsetting:ChatHubUri"]';
         var appSettings = {
-
             ChatHubUrl: new URL(ChatHubUri, API_BASE).href
         };
-        console.log(appSettings);
     </script>
     <script src="~/js/ChatRoom/ChatRoom.js" asp-append-version="true"></script>
     <script>

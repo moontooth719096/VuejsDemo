@@ -1,5 +1,6 @@
 ﻿#app {
   font-size: 16px;
+  /*min-height:420px;*/
 }
 #app .usersboard {
   /*max-width: 270px;*/
@@ -62,4 +63,8 @@
 }
 #app .talkboard .card .card-body::-webkit-scrollbar {
   display: none;
+}
+#app .talkboard .card .card-footer .sendmsgbtn {
+  width: 5vw;
+  min-width: 58px;
 }

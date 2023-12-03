@@ -13,7 +13,7 @@ namespace DemoProgressBarAPI.Services
 
         //public IEnumerable<> GetOnlineusers()
         //{
-        //    _chatroomservice.Clients.;
+            
         //}
     }
 }

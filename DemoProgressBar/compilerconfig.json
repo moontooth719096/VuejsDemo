@@ -6,5 +6,13 @@
   {
     "outputFile": "Pages/ChatRoom/index.cshtml.css",
     "inputFile": "Pages/ChatRoom/index.cshtml.scss"
+  },
+  {
+    "outputFile": "wwwroot/js/site.es5.js",
+    "inputFile": "wwwroot/js/site.js"
+  },
+  {
+    "outputFile": "wwwroot/js/ChatRoom/ChatRoom.es5.js",
+    "inputFile": "wwwroot/js/ChatRoom/ChatRoom.js"
   }
 ]

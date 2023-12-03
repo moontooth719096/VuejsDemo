@@ -98,6 +98,7 @@
                 if (user.noReadCount>0)
                     user.noReadCount = 0;
             }
+            this.refreshChat();
         },
         //發送訊息
         sendmessage() {
@@ -169,11 +170,11 @@
         }
 
     },
-    watch: {
-        // 監聽 當前聊天對象ID 這個變數是否有變化
-        nowtalkid: function () {
-            //變化時直接刷新當前對話內容
-            this.refreshChat();
-        }
-    }
+    //watch: {
+    //    // 監聽 當前聊天對象ID 這個變數是否有變化
+    //    nowtalkid: function () {
+    //        //變化時直接刷新當前對話內容
+    //        this.refreshChat();
+    //    }
+    //}
 }).mount('#app')
