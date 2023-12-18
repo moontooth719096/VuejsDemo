@@ -14,7 +14,9 @@
     created() {
         var self = this;
         self.signalRconnect = new signalR.HubConnectionBuilder()
-            .withUrl(self.config.ChatHubUrl) // 你的 SignalR Hub 地址
+            .withUrl(self.config.ChatHubUrl, {
+                Authorization: () => window.getAcessToken(), // 在這裡提供標頭
+            }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
             .build();
         self.initSigmalR(self);

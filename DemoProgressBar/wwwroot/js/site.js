@@ -2,3 +2,14 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+function getGoogleAcessToken() {
+    return  'Bearer '+localStorage.getItem('googleAuthToken');
+}
+
+function setGoogleAcessToken(token) {
+    localStorage.setItem('googleAuthToken', token);
+}
+
+function removeGoogleAcessToken(token) {
+    localStorage.removeItem("googleAuthToken");
+}

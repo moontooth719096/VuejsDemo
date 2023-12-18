@@ -1,8 +1,10 @@
 ﻿using DemoProgressBarAPI.Models.ChatRoom;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace DemoProgressBarAPI.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         //private static List<string> _connectlist;

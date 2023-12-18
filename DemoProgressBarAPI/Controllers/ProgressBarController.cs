@@ -1,6 +1,7 @@
 ﻿using DemoProgressBarAPI.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DemoProgressBarAPI.Controllers
 {

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DemoProgressBarAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+  
     public class ChatRoomController : ControllerBase
     {
         [HttpGet]
