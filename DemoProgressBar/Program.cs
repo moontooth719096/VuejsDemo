@@ -1,3 +1,4 @@
+using DemoProgressBar.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 

@@ -18,24 +18,30 @@ namespace DemoProgressBarAPI.Controllers
         {
             public string? Code { get; set; }
             public string credential { get; set; }
-            public string g_csrf_token { get; set; }
         }
 
         [AllowAnonymous]
         [HttpPost("Login")]
-        public IActionResult Login([FromForm] GoogleLoginRequest request)
+        public IActionResult Login(GoogleLoginRequest request)
         {
-            string? formCredential = Request.Form["credential"]; //回傳憑證
-            string? formToken = Request.Form["g_csrf_token"]; //回傳令牌
-            string? cookiesToken = Request.Cookies["g_csrf_token"]; //Cookie 令牌
-            // 驗證 Google Token
-            GoogleJsonWebSignature.Payload? payload = VerifyGoogleToken(formCredential, formToken, cookiesToken).Result;
-            if (payload == null)
+            //string? formCredential = Request.Form["credential"]; //回傳憑證
+            //string? formToken = Request.Form["g_csrf_token"]; //回傳令牌
+            //string? cookiesToken = Request.Cookies["g_csrf_token"]; //Cookie 令牌
+            try
             {
-                // 驗證失敗
+                string JWTToken = string.Empty;
+                // 驗證 Google Token
+                GoogleJsonWebSignature.Payload? payload = VerifyGoogleToken(request.credential).Result;
+                if (payload == null)
+                {
+                    // 驗證失敗
+                }
+                return Content(JWTToken);
             }
-
-            return Redirect("/WeatherForecast");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         /// <summary>
         /// 驗證 Google Token
@@ -44,10 +50,10 @@ namespace DemoProgressBarAPI.Controllers
         /// <param name="formToken"></param>
         /// <param name="cookiesToken"></param>
         /// <returns></returns>
-        private async Task<GoogleJsonWebSignature.Payload?> VerifyGoogleToken(string? formCredential, string? formToken, string? cookiesToken)
+        private async Task<GoogleJsonWebSignature.Payload?> VerifyGoogleToken(string? formCredential)
         {
             // 檢查空值
-            if (formCredential == null || formToken == null && cookiesToken == null)
+            if (formCredential == null)
             {
                 return null;
             }
@@ -55,12 +61,6 @@ namespace DemoProgressBarAPI.Controllers
             GoogleJsonWebSignature.Payload? payload;
             try
             {
-                // 驗證 token
-                if (formToken != cookiesToken)
-                {
-                    return null;
-                }
-
                 // 驗證憑證
                 string GoogleApiClientId = _configuration["GoogleAuth:ClientID"];
                 var settings = new GoogleJsonWebSignature.ValidationSettings()

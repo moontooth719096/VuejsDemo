@@ -72,6 +72,8 @@ const vm = Vue.createApp({
         },
         handleCredentialResponse(response) {
 
+            this.googleLogin(response.credential);
+
             const responsePayload = this.decodeJwtResponse(response.credential);
             //console.log("ID: " + responsePayload.sub);
             //console.log('Full Name: ' + responsePayload.name);
@@ -111,6 +113,20 @@ const vm = Vue.createApp({
 
             // go to new page
             //window.location.replace("https://localhost:7068/WeatherForecast");
+
+        },
+        googleLogin(token) {
+           let data = {
+               credential:token
+            }
+
+            axios.post('https://localhost:7068/api/GoogleAuth/Login', data)
+                .then(function (response) {
+
+                })
+                .catch(function (error) {
+
+                });
 
         },
         decodeJwtResponse(token) {

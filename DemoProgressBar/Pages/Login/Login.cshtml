@@ -1,6 +1,9 @@
 ﻿@page
-@model DemoProgressBar.Pages.Login.LoginModel
+@using DemoProgressBar.Models
+@using Microsoft.Extensions.Options
+@using System.Text.Json
 @inject IConfiguration Configuration;
+@inject IOptions<ApiSettings> options;
 
 <div id="app">
 @*     <div ref="googleLoginBtn" id="g_id_onload">
