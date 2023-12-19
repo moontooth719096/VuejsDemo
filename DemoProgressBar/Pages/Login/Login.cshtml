@@ -3,25 +3,27 @@
 @inject IConfiguration Configuration;
 
 <div id="app">
-    <div id="g_id_onload"
-         data-client_id=@Configuration["GoogleAuth:ClientID"]
+@*     <div ref="googleLoginBtn" id="g_id_onload">
+          data-client_id=@Configuration["GoogleAuth:ClientID"]
          data-context="signin"
          data-ux_mode="popup"
          data-auto_select="true"
-         data-login_uri="https://localhost:7068/api/GoogleAuth/Login"
-    @* data-callback="handleCredentialResponse" *@
+         data-login_uri="https://localhost:7068/api/GoogleAuth/Login" 
+          v-bind:data-callback="handleCredentialResponse"
          data-auto_prompt="false"
          data-use_fedcm_for_prompt="true">
     </div>
 
-    <div class="g_id_signin"
+    <div ref="googleLoginBtn" class="g_id_signin">
          data-type="standard"
          data-shape="rectangular"
          data-theme="outline"
          data-text="signin_with"
          data-size="medium"
          data-logo_alignment="left">
-    </div>
+    </div> *@
+    <div id="buttonDiv"></div>
+    <button id="signout_item" class="btn" :onclick="logOut()"></button>
 </div>
 
 @section Scripts{
@@ -29,7 +31,8 @@
         var ClientID = '@Configuration["GoogleAuth:ClientID"]';
        
     </script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    @* <script src="https://accounts.google.com/gsi/client" async defer></script> *@
+    <script src="https://accounts.google.com/gsi/client"></script>
     <script src="~/js/Login/Login.js" asp-append-version="true"></script>
     <script>
 
