@@ -1,4 +1,5 @@
-﻿using Google.Apis.Auth;
+﻿using DemoProgressBarAPI.Interfaces;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -9,10 +10,11 @@ namespace DemoProgressBarAPI.Controllers
     [Route("api/[controller]")]
     public class GoogleAuthController : ControllerBase
     {
-        private IConfiguration _configuration;
-        public GoogleAuthController(IConfiguration configuration)
+        private readonly IGoogleOAuthService _googleOAuthService;
+
+        public GoogleAuthController(IGoogleOAuthService googleOAuthService)
         {
-            _configuration = configuration;
+            _googleOAuthService = googleOAuthService;
         }
         public class GoogleLoginRequest
         {
@@ -31,7 +33,7 @@ namespace DemoProgressBarAPI.Controllers
             {
                 string JWTToken = string.Empty;
                 // 驗證 Google Token
-                GoogleJsonWebSignature.Payload? payload = VerifyGoogleToken(request.credential).Result;
+                GoogleJsonWebSignature.Payload? payload = _googleOAuthService.Verify(request.credential).Result;
                 if (payload == null)
                 {
                     // 驗證失敗
@@ -43,54 +45,6 @@ namespace DemoProgressBarAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        /// <summary>
-        /// 驗證 Google Token
-        /// </summary>
-        /// <param name="formCredential"></param>
-        /// <param name="formToken"></param>
-        /// <param name="cookiesToken"></param>
-        /// <returns></returns>
-        private async Task<GoogleJsonWebSignature.Payload?> VerifyGoogleToken(string? formCredential)
-        {
-            // 檢查空值
-            if (formCredential == null)
-            {
-                return null;
-            }
-
-            GoogleJsonWebSignature.Payload? payload;
-            try
-            {
-                // 驗證憑證
-                string GoogleApiClientId = _configuration["GoogleAuth:ClientID"];
-                var settings = new GoogleJsonWebSignature.ValidationSettings()
-                {
-                    Audience = new List<string>() { GoogleApiClientId }
-                };
-                payload = await GoogleJsonWebSignature.ValidateAsync(formCredential, settings);
-                if (!payload.Issuer.Equals("accounts.google.com") && !payload.Issuer.Equals("https://accounts.google.com"))
-                {
-                    return null;
-                }
-                if (payload.ExpirationTimeSeconds == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    DateTime now = DateTime.Now.ToUniversalTime();
-                    DateTime expiration = DateTimeOffset.FromUnixTimeSeconds((long)payload.ExpirationTimeSeconds).DateTime;
-                    if (now > expiration)
-                    {
-                        return null;
-                    }
-                }
-            }
-            catch
-            {
-                return null;
-            }
-            return payload;
-        }
+        
     }
 }

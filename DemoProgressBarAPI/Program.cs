@@ -1,6 +1,9 @@
 using DemoProgressBarAPI.Hubs;
+using DemoProgressBarAPI.Interfaces;
+using DemoProgressBarAPI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -40,9 +43,10 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 
 var config = builder.Configuration;
-builder.Services.AddAuthentication(o =>
+builder.Services.AddAuthentication(options =>
 {
     //// This forces challenge results to be handled by Google OpenID Handler, so there's no
     //// need to add an AccountController that emits challenges for Login.
@@ -52,7 +56,8 @@ builder.Services.AddAuthentication(o =>
     //o.DefaultForbidScheme = GoogleDefaults.AuthenticationScheme;
     //// Default scheme that will handle everything else.
     //// Once a user is authenticated, the OAuth2 token info is stored in cookies.
-    o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 //    .AddCookie()
     .AddGoogle(googleOptions =>
@@ -83,7 +88,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors(builder =>
         builder
-        .WithOrigins("https://localhost:7145", "https://localhost:32768", "https://localhost:32778", "https://demoprogressbar.moon719096service.uk")
+        .WithOrigins("https://localhost:7145", "https://localhost:32768", "https://localhost:44318", "https://demoprogressbar.moon719096service.uk")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

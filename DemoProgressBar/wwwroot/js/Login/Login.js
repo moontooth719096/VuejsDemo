@@ -6,9 +6,6 @@ const vm = Vue.createApp({
             //google: self.google
         }
     },
-    created() {
-        
-    },
     mounted() {
         this.checkLoginStatus();
     },
@@ -71,8 +68,8 @@ const vm = Vue.createApp({
             }
         },
         handleCredentialResponse(response) {
-
-            this.googleLogin(response.credential);
+            //呼叫GOOGLE登入api
+            let Jwttoken = this.googleLogin(response.credential);
 
             const responsePayload = this.decodeJwtResponse(response.credential);
             //console.log("ID: " + responsePayload.sub);
@@ -122,7 +119,7 @@ const vm = Vue.createApp({
 
             axios.post('https://localhost:7068/api/GoogleAuth/Login', data)
                 .then(function (response) {
-
+                    return response.data;
                 })
                 .catch(function (error) {
 
