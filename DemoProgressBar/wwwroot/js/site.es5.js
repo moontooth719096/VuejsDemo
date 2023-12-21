@@ -5,6 +5,10 @@
 'use strict';
 
 function getGoogleAcessToken() {
+    return localStorage.getItem('googleAuthToken');
+}
+
+function getAPIGoogleAcessToken() {
     return 'Bearer ' + localStorage.getItem('googleAuthToken');
 }
 

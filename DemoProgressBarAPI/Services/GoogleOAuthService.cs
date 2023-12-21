@@ -1,6 +1,8 @@
 ﻿using DemoProgressBarAPI.Interfaces;
+using DemoProgressBarAPI.Models;
 using DemoProgressBarAPI.Models.User;
 using Google.Apis.Auth;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,10 +14,12 @@ namespace DemoProgressBarAPI.Services
     public class GoogleOAuthService : IGoogleOAuthService
     {
         private IConfiguration _configuration;
-        public GoogleOAuthService(IConfiguration configuration)
+        private JWTSettings _jwt;
+        public GoogleOAuthService(IConfiguration configuration, IOptions<JWTSettings> jwt)
         {
             _configuration = configuration;
-        }
+            _jwt = jwt.Value;
+    }
         /// <summary>
         /// 驗證 Google Token
         /// </summary>
@@ -23,25 +27,34 @@ namespace DemoProgressBarAPI.Services
         /// <param name="formToken"></param>
         /// <param name="cookiesToken"></param>
         /// <returns></returns>
-        public async Task<Payload?> Verify(string? formCredential)
+        public async Task<string?> Verify(string? formCredential)
         {
-            // 檢查空值
-            if (formCredential == null)
+            string JWT = string.Empty;
+            try
             {
-                return null;
+                // 檢查空值
+                if (formCredential == null)
+                {
+                    return null;
+                }
+
+                GoogleJsonWebSignature.Payload? payload = await GoogleVerify(formCredential);
+                //整理需要的資料
+                UserInfo userInfo = new UserInfo
+                {
+                    UserName = payload.Name,
+                    UserID = payload.Subject,
+                    PicturesPath = payload.Picture,
+                };
+                //產生自己的JWT
+                JWT = CreateJwtToken(userInfo);
+            }
+            catch (Exception ex)
+            { 
+            
             }
 
-            GoogleJsonWebSignature.Payload? payload = await GoogleVerify(formCredential);
-            //整理需要的資料
-            UserInfo userInfo = new UserInfo { 
-                UserName = payload.Name,
-                UserID = payload.Subject,
-                PicturesPath = payload.Picture,
-            };
-            //產生自己的JWT
-            string JWT = CreateJwtToken(userInfo);
-
-            return payload;
+            return JWT;
         }
         private async Task<Payload> GoogleVerify(string? formCredential)
         {
@@ -93,7 +106,7 @@ namespace DemoProgressBarAPI.Services
                 issuer: _jwt.ValidIssuer,
                 notBefore: DateTime.UtcNow,
                 audience: _jwt.ValidAudience,
-                expires: DateTime.UtcNow.AddMinutes(Convert.ToInt32(_jwt.DurationInMinutes)),
+                expires: DateTime.UtcNow.AddDays(Convert.ToInt32(_jwt.DurationInDay)),
                 claims: userClaims,
                 signingCredentials: new SigningCredentials(signKey, SecurityAlgorithms.HmacSha256));
 
@@ -104,16 +117,6 @@ namespace DemoProgressBarAPI.Services
         {
             List<Claim> userClaims = user.GetType().GetProperties().Select(x=>new Claim(x.Name,x.GetValue(user)?.ToString()??string.Empty)).ToList();
             userClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-
-
-        //     var userClaims = new List<Claim>()
-        //{ClaimTypes
-        //    new Claim(ClaimTypes.Name, user.Id.ToString()),
-        //    new Claim(JwtClaimTypes.Email, user.Email),
-        //    new Claim(JwtClaimTypes.GivenName, user.FirstName),
-        //    new Claim(JwtClaimTypes.FamilyName, user.LastName),
-        //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        //};
 
             return userClaims;
         }

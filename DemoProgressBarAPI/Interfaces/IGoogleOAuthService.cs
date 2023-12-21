@@ -4,6 +4,6 @@ namespace DemoProgressBarAPI.Interfaces
 {
     public interface IGoogleOAuthService
     {
-        Task<GoogleJsonWebSignature.Payload?> Verify(string? formCredential);
+        Task<string> Verify(string? formCredential);
     }
 }

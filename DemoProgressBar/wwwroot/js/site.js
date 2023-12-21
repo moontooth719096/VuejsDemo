@@ -3,7 +3,11 @@
 
 // Write your JavaScript code.
 function getGoogleAcessToken() {
-    return  'Bearer '+localStorage.getItem('googleAuthToken');
+    return  localStorage.getItem('googleAuthToken');
+}
+
+function getAPIGoogleAcessToken() {
+    return 'Bearer ' + localStorage.getItem('googleAuthToken');
 }
 
 function setGoogleAcessToken(token) {

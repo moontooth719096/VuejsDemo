@@ -1,5 +1,6 @@
 using DemoProgressBarAPI.Hubs;
 using DemoProgressBarAPI.Interfaces;
+using DemoProgressBarAPI.Models;
 using DemoProgressBarAPI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -41,7 +42,7 @@ builder.Services.AddSwaggerGen(options =>
      }
 });
 });
-
+builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTsettings"));
 builder.Services.AddSignalR();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 

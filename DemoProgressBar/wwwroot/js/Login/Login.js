@@ -2,11 +2,18 @@
 const vm = Vue.createApp({
     data() {
         return {
-            ClientID: window.ClientID
+            ClientID: window.ClientID,
+            apiHelp: null
             //google: self.google
         }
     },
     mounted() {
+        this.apiHelp = axios.create({
+            baseURL: 'https://localhost:7068',
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
         this.checkLoginStatus();
     },
     methods: {
@@ -18,7 +25,7 @@ const vm = Vue.createApp({
             this.deleteCookie("email");
             this.deleteCookie("userInfo");
             /*signoutItemDisplay(false);*/
-            var userCookie = this.getCookie("token");
+            var userCookie = getGoogleAcessToken();
 
             if (userCookie) {
                 this.signoutItemDisplay(true);
@@ -67,11 +74,14 @@ const vm = Vue.createApp({
                 }
             }
         },
-        handleCredentialResponse(response) {
+        async handleCredentialResponse(response) {
             //呼叫GOOGLE登入api
-            let Jwttoken = this.googleLogin(response.credential);
-
-            const responsePayload = this.decodeJwtResponse(response.credential);
+            let getresult = await this.googleLogin(response.credential);
+            if (getresult.code != 1) {
+                return;
+            }
+            setGoogleAcessToken(getresult.JWT);
+            const responsePayload = this.decodeJwtResponse(Jwttoken);
             //console.log("ID: " + responsePayload.sub);
             //console.log('Full Name: ' + responsePayload.name);
             ////console.log('Given Name: ' + responsePayload.given_name);
@@ -81,50 +91,55 @@ const vm = Vue.createApp({
             //console.log("Encoded JWT ID token: " + response.credential);
 
             // set up to cookie
-            var expirationDate = new Date();
-            var usernameCookie = `username=${responsePayload.given_name}${responsePayload.family_name}; path=/`;
-            expirationDate.setDate(expirationDate.getDate() + 14);
-            usernameCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
-            document.cookie = usernameCookie
+            //var expirationDate = new Date();
+            //var usernameCookie = `username=${responsePayload.given_name}${responsePayload.family_name}; path=/`;
+            //expirationDate.setDate(expirationDate.getDate() + 14);
+            //usernameCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
+            //document.cookie = usernameCookie
 
-            var emailCookie = "email=" + responsePayload.email.toString() + "; path=/";
-            expirationDate.setDate(expirationDate.getDate() + 14);
-            emailCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
-            document.cookie = emailCookie
+            //var emailCookie = "email=" + responsePayload.email.toString() + "; path=/";
+            //expirationDate.setDate(expirationDate.getDate() + 14);
+            //emailCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
+            //document.cookie = emailCookie
 
-            var tokenCookie = "token=" + response.credential + "; path=/";
-            expirationDate.setDate(expirationDate.getDate() + 14);
-            tokenCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
-            document.cookie = tokenCookie
+            //var tokenCookie = "token=" + response.credential + "; path=/";
+            //expirationDate.setDate(expirationDate.getDate() + 14);
+            //tokenCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
+            //document.cookie = tokenCookie
 
-            var userData = {
-                username: `${responsePayload.given_name}${responsePayload.family_name}`,
-                email: responsePayload.email,
-                token: response.credential
-            };
+            //var userData = {
+            //    username: `${responsePayload.given_name}${responsePayload.family_name}`,
+            //    email: responsePayload.email,
+            //    token: response.credential
+            //};
 
-            var userCookie = `userInfo=${JSON.stringify(userData)}; path=/;`;
-            expirationDate.setDate(expirationDate.getDate() + 14);
-            userCookie += `expires=${expirationDate.toUTCString()}; secure; samesite=strict`;
-            document.cookie = userCookie;
+            //var userCookie = `userInfo=${JSON.stringify(userData)}; path=/;`;
+            //expirationDate.setDate(expirationDate.getDate() + 14);
+            //userCookie += `expires=${expirationDate.toUTCString()}; secure; samesite=strict`;
+            //document.cookie = userCookie;
 
             // go to new page
             //window.location.replace("https://localhost:7068/WeatherForecast");
 
         },
-        googleLogin(token) {
-           let data = {
-               credential:token
+        async googleLogin(token) {
+            let result = {
+                code: 0,
+                JWT: null
+            };
+            let postdata = {
+                credential: token
             }
 
-            axios.post('https://localhost:7068/api/GoogleAuth/Login', data)
+            await this.apiHelp.post('api/GoogleAuth/Login', postdata)
                 .then(function (response) {
-                    return response.data;
+                    result.code = 1;
+                    result.JWT = response.data;
                 })
                 .catch(function (error) {
 
                 });
-
+            return result;
         },
         decodeJwtResponse(token) {
             var base64Url = token.split(".")[1];
@@ -147,7 +162,7 @@ const vm = Vue.createApp({
             this.deleteCookie("email");
             this.deleteCookie("userInfo");
             this.signoutItemDisplay(false);
-            //window.location.replace("/Home/Index");
+            window.location.replace("/Login/Login");
         },
         deleteCookie(cookieName) {
             var cookies = document.cookie.split(";");
@@ -210,7 +225,7 @@ const vm = Vue.createApp({
 //    }
 //}
 
-// After login success 
+// After login success
 //function handleCredentialResponse(response) {
 
 //    const responsePayload = decodeJwtResponse(response.credential);
