@@ -3,6 +3,7 @@ using Google.Apis.Auth;
 using Google.Apis.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
 namespace DemoProgressBarAPI.Controllers
@@ -20,7 +21,7 @@ namespace DemoProgressBarAPI.Controllers
         public class GoogleLoginRequest
         {
             public string? Code { get; set; }
-            public string credential { get; set; }
+            public string Credential { get; set; }
         }
 
         [AllowAnonymous]
@@ -34,7 +35,7 @@ namespace DemoProgressBarAPI.Controllers
             {
                 string JWTToken = string.Empty;
                 // 驗證 Google Token
-                JWTToken = _googleOAuthService.Verify(request.credential).Result;
+                JWTToken = _googleOAuthService.Verify(request.Credential).Result;
           
                 return Content(JWTToken);
             }

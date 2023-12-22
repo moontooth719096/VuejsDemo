@@ -16,8 +16,8 @@ var vm = Vue.createApp({
     created: function created() {
         var self = this;
         self.signalRconnect = new signalR.HubConnectionBuilder().withUrl(self.config.ChatHubUrl, {
-            Authorization: function Authorization() {
-                return window.getAcessToken();
+            accessTokenFactory: function accessTokenFactory() {
+                return getTokenCookie();
             } }) // 你的 SignalR Hub 地址
         . // 在這裡提供標頭
         withAutomaticReconnect().build();

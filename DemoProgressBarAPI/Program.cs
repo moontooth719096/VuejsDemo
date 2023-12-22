@@ -6,8 +6,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,13 +62,42 @@ builder.Services.AddAuthentication(options =>
     //// Once a user is authenticated, the OAuth2 token info is stored in cookies.
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-//    .AddCookie()
-    .AddGoogle(googleOptions =>
+}).AddJwtBearer(options =>
 {
-    googleOptions.ClientId = config["GoogleAuth:ClientID"];
-    googleOptions.ClientSecret = config["GoogleAuth:SecretKey"];
+    options.RequireHttpsMetadata = true;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidIssuer = config["JWTsettings:ValidIssuer"],
+        ValidAudience = config["JWTsettings:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(config["JWTsettings:Secret"])),
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            // SignalR 會將 Token 以參數名稱 access_token 的方式放在 URL 查詢參數裡
+            var accessToken = context.Request.Query["access_token"];
+
+            // 連線網址為 Hubs 相關路徑才檢查
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
+//    .AddCookie()
+//    .AddGoogle(googleOptions =>
+//{
+//    googleOptions.ClientId = config["GoogleAuth:ClientID"];
+//    googleOptions.ClientSecret = config["GoogleAuth:SecretKey"];
+//});
 //builder.Services.AddCors(options =>
 //{
 //    options.AddDefaultPolicy(builder =>

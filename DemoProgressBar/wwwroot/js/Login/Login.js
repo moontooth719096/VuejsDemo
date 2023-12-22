@@ -25,13 +25,13 @@ const vm = Vue.createApp({
             this.deleteCookie("email");
             this.deleteCookie("userInfo");
             /*signoutItemDisplay(false);*/
-            var userCookie = getGoogleAcessToken();
+            var userCookie = getTokenCookie();
 
             if (userCookie) {
                 this.signoutItemDisplay(true);
 
                 // go to new page
-                //window.location.replace("/Home/List");
+                //window.location.replace("/");
 
             } else {
 
@@ -80,8 +80,11 @@ const vm = Vue.createApp({
             if (getresult.code != 1) {
                 return;
             }
-            setGoogleAcessToken(getresult.JWT);
-            const responsePayload = this.decodeJwtResponse(Jwttoken);
+            /* setGoogleAcessToken(getresult.JWT);*/
+            const responsePayload = this.decodeJwtResponse(getresult.JWT);
+
+            setTokenCookie(getresult.JWT, responsePayload.exp * 1000);
+
             //console.log("ID: " + responsePayload.sub);
             //console.log('Full Name: ' + responsePayload.name);
             ////console.log('Given Name: ' + responsePayload.given_name);
