@@ -9,7 +9,7 @@ const vm = Vue.createApp({
     },
     mounted() {
         this.apiHelp = axios.create({
-            baseURL: 'https://localhost:7068',
+            baseURL: self.API_BASE,
             headers: {
                 "Content-Type": "application/json"
             }
@@ -82,44 +82,8 @@ const vm = Vue.createApp({
             }
             /* setGoogleAcessToken(getresult.JWT);*/
             const responsePayload = this.decodeJwtResponse(getresult.JWT);
-
+            //token寫入Cookie
             setTokenCookie(getresult.JWT, responsePayload.exp * 1000);
-
-            //console.log("ID: " + responsePayload.sub);
-            //console.log('Full Name: ' + responsePayload.name);
-            ////console.log('Given Name: ' + responsePayload.given_name);
-            ////console.log('Family Name: ' + responsePayload.family_name);
-            //console.log("Image URL: " + responsePayload.picture);
-            //console.log("Email: " + responsePayload.email);
-            //console.log("Encoded JWT ID token: " + response.credential);
-
-            // set up to cookie
-            //var expirationDate = new Date();
-            //var usernameCookie = `username=${responsePayload.given_name}${responsePayload.family_name}; path=/`;
-            //expirationDate.setDate(expirationDate.getDate() + 14);
-            //usernameCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
-            //document.cookie = usernameCookie
-
-            //var emailCookie = "email=" + responsePayload.email.toString() + "; path=/";
-            //expirationDate.setDate(expirationDate.getDate() + 14);
-            //emailCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
-            //document.cookie = emailCookie
-
-            //var tokenCookie = "token=" + response.credential + "; path=/";
-            //expirationDate.setDate(expirationDate.getDate() + 14);
-            //tokenCookie += "; expires=" + expirationDate.toUTCString() + " ; secure ;samesite=strict";
-            //document.cookie = tokenCookie
-
-            //var userData = {
-            //    username: `${responsePayload.given_name}${responsePayload.family_name}`,
-            //    email: responsePayload.email,
-            //    token: response.credential
-            //};
-
-            //var userCookie = `userInfo=${JSON.stringify(userData)}; path=/;`;
-            //expirationDate.setDate(expirationDate.getDate() + 14);
-            //userCookie += `expires=${expirationDate.toUTCString()}; secure; samesite=strict`;
-            //document.cookie = userCookie;
 
             // go to new page
             //window.location.replace("https://localhost:7068/WeatherForecast");
@@ -134,7 +98,8 @@ const vm = Vue.createApp({
                 credential: token
             }
 
-            await this.apiHelp.post('api/GoogleAuth/Login', postdata)
+            //await this.apiHelp.post('api/GoogleAuth/Login', postdata)
+            await this.apiHelp.post(self.config.GoogleLoginUri, postdata)
                 .then(function (response) {
                     result.code = 1;
                     result.JWT = response.data;

@@ -32,7 +32,8 @@
 @section Scripts{
     <script>
         var ClientID = '@Configuration["GoogleAuth:ClientID"]';
-       
+        var API_BASE = '@Configuration["APIsetting:BaseUrl"]';
+        var GoogleLoginUri = '@Configuration["APIsetting:GoogleLoginUri"]';
     </script>
     @* <script src="https://accounts.google.com/gsi/client" async defer></script> *@
     <script src="https://accounts.google.com/gsi/client"></script>
