@@ -48,6 +48,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTsettings"));
 builder.Services.AddSignalR();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
+builder.Services.AddSingleton<IYoutubeListDownloadService, YoutubeClientVerDownloadService>();
 
 var config = builder.Configuration;
 builder.Services.AddAuthentication(options =>
@@ -133,5 +134,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<DemoHub>("/DownloadHub");
 app.MapHub<ChatHub>("/ChatHub");
+app.MapHub<YoutubeDownloadProgressHub>("/youtubeDownloadProgressHub");
 
 app.Run();
