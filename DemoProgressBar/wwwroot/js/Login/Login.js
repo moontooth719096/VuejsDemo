@@ -25,7 +25,7 @@ const vm = Vue.createApp({
             this.deleteCookie("email");
             this.deleteCookie("userInfo");
             /*signoutItemDisplay(false);*/
-            var userCookie = getTokenCookie();
+            var userCookie = getTokenCookieBearer();
 
             if (userCookie) {
                 this.signoutItemDisplay(true);
@@ -99,7 +99,7 @@ const vm = Vue.createApp({
             }
 
             //await this.apiHelp.post('api/GoogleAuth/Login', postdata)
-            await this.apiHelp.post(self.config.GoogleLoginUri, postdata)
+            await this.apiHelp.post(self.GoogleLoginUri, postdata)
                 .then(function (response) {
                     result.code = 1;
                     result.JWT = response.data;
