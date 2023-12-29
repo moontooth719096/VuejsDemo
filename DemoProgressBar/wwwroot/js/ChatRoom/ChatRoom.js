@@ -11,11 +11,22 @@
             config: window.appSettings,
         }
     },
-    created() {
+    //created() {
+    //    var self = this;
+    //    self.signalRconnect = new signalR.HubConnectionBuilder()
+    //        .withUrl(self.config.ChatHubUrl, {
+    //            accessTokenFactory: () => getTokenCookie(), // 在這裡提供標頭
+    //        }) // 你的 SignalR Hub 地址
+    //        .withAutomaticReconnect()
+    //        .build();
+    //    self.initSigmalR(self);
+    //},
+    mounted() {
         var self = this;
+        const token = window.getTokenCookie();
         self.signalRconnect = new signalR.HubConnectionBuilder()
             .withUrl(self.config.ChatHubUrl, {
-                accessTokenFactory: () => getTokenCookie(), // 在這裡提供標頭
+                accessTokenFactory: () => token // 在這裡提供標頭
             }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
             .build();
@@ -89,6 +100,9 @@
                 }
             });
             
+        },
+        gettoken() {
+            return getTokenCookie();
         },
         //設定要聊天的人
         talkselect(selectid) {

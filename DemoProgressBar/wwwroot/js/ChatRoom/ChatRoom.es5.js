@@ -13,14 +13,25 @@ var vm = Vue.createApp({
             config: window.appSettings
         };
     },
-    created: function created() {
+    //created() {
+    //    var self = this;
+    //    self.signalRconnect = new signalR.HubConnectionBuilder()
+    //        .withUrl(self.config.ChatHubUrl, {
+    //            accessTokenFactory: () => getTokenCookie(), // 在這裡提供標頭
+    //        }) // 你的 SignalR Hub 地址
+    //        .withAutomaticReconnect()
+    //        .build();
+    //    self.initSigmalR(self);
+    //},
+    mounted: function mounted() {
         var self = this;
+        var token = window.getTokenCookie();
         self.signalRconnect = new signalR.HubConnectionBuilder().withUrl(self.config.ChatHubUrl, {
             accessTokenFactory: function accessTokenFactory() {
-                return getTokenCookie();
-            } }) // 你的 SignalR Hub 地址
-        . // 在這裡提供標頭
-        withAutomaticReconnect().build();
+                return token;
+            } // 在這裡提供標頭
+        }) // 你的 SignalR Hub 地址
+        .withAutomaticReconnect().build();
         self.initSigmalR(self);
     },
     methods: {
@@ -101,6 +112,9 @@ var vm = Vue.createApp({
                         return context$1$0.stop();
                 }
             }, null, this);
+        },
+        gettoken: function gettoken() {
+            return getTokenCookie();
         },
         //設定要聊天的人
         talkselect: function talkselect(selectid) {

@@ -84,6 +84,9 @@ function setTokenCookie(value, expirationTimestamp) {
     setCookie(actkn, value, expirationTimestamp);
 }
 function getTokenCookie() {
+    return getCookie(actkn);
+}
+function getTokenCookieBearer() {
     var result = null;
     var token = getCookie(actkn);
     if (token) result = 'Bearer ' + getCookie(actkn);
