@@ -14,5 +14,9 @@
   {
     "outputFile": "wwwroot/js/ChatRoom/ChatRoom.es5.js",
     "inputFile": "wwwroot/js/ChatRoom/ChatRoom.js"
+  },
+  {
+    "outputFile": "Pages/Login/Login.cshtml.css",
+    "inputFile": "Pages/Login/Login.cshtml.scss"
   }
 ]

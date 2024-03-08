@@ -9,10 +9,11 @@ var vm = Vue.createApp({
             nowtalkid: null, //當前聊天對象ID
             talklist: [], //聊天內容清單
             nowtalk: [], //當前聊天對象內容
-            keyonmessage: '', //對話框輸入內容
-            config: window.appSettings
-        };
+            keyonmessage: '' };
     },
+    //對話框輸入內容
+    //config: window.appSettings,
+    //settings: APISettings
     //created() {
     //    var self = this;
     //    self.signalRconnect = new signalR.HubConnectionBuilder()
@@ -25,8 +26,12 @@ var vm = Vue.createApp({
     //},
     mounted: function mounted() {
         var self = this;
+        //console.log(settings.BaseUrl);
+        //console.log(APISettings.BaseUrl);
+        //const token = window.getTokenCookie();
         var token = window.getTokenCookie();
-        self.signalRconnect = new signalR.HubConnectionBuilder().withUrl(self.config.ChatHubUrl, {
+        var ChatHubUrl = new URL(APISettings.ChatHubUri, APISettings.BaseUrl).href;
+        self.signalRconnect = new signalR.HubConnectionBuilder().withUrl(ChatHubUrl, {
             accessTokenFactory: function accessTokenFactory() {
                 return token;
             } // 在這裡提供標頭
@@ -112,9 +117,6 @@ var vm = Vue.createApp({
                         return context$1$0.stop();
                 }
             }, null, this);
-        },
-        gettoken: function gettoken() {
-            return getTokenCookie();
         },
         //設定要聊天的人
         talkselect: function talkselect(selectid) {
@@ -202,12 +204,5 @@ var vm = Vue.createApp({
         }
 
     }
-}). //watch: {
-//    // 監聽 當前聊天對象ID 這個變數是否有變化
-//    nowtalkid: function () {
-//        //變化時直接刷新當前對話內容
-//        this.refreshChat();
-//    }
-//}
-mount('#app');
+}).mount('#app');
 

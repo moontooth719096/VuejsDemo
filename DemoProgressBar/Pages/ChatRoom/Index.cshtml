@@ -1,6 +1,6 @@
 ﻿@page
 @*@model DemoProgressBar.Pages.ChatRoom.IndexModel*@
-@inject IConfiguration Configuration;
+@* @inject IConfiguration Configuration; *@
 
 <div id="app" class="row g-0 ">
     <div id="UsersBoard" class="usersboard col-1 col-md-3">
@@ -59,14 +59,7 @@
 </div>
 
 @section Scripts{
-    <script>
-        var API_BASE='@Configuration["APIsetting:BaseUrl"]';
-        var ChatHubUri= '@Configuration["APIsetting:ChatHubUri"]';
-        var appSettings = {
-            ChatHubUrl: new URL(ChatHubUri, API_BASE).href
-        };
-    </script>
-    <script src="~/js/ChatRoom/ChatRoom.js" asp-append-version="true"></script>
+    <script type="module" src="~/js/ChatRoom/ChatRoom.js" asp-append-version="true"></script>
     <script>
         // 在窗口大小改變時 動態設定聊天室窗的高度與寬度
         window.addEventListener('resize', function () {

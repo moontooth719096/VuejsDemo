@@ -2,14 +2,14 @@
 const vm = Vue.createApp({
     data() {
         return {
-            ClientID: window.ClientID,
+            ClientID: GoogleOAuth.ClientID,
             apiHelp: null
             //google: self.google
         }
     },
     mounted() {
         this.apiHelp = axios.create({
-            baseURL: self.API_BASE,
+            baseURL: APISettings.BaseUrl,
             headers: {
                 "Content-Type": "application/json"
             }
@@ -38,7 +38,8 @@ const vm = Vue.createApp({
                 this.signoutItemDisplay(false);
                 google.accounts.id.initialize({
                     client_id: this.ClientID,
-                    callback: this.handleCredentialResponse
+                    callback: this.handleCredentialResponse,
+                    use_fedcm_for_prompt: true,
                 });
 
                 google.accounts.id.renderButton(
@@ -99,7 +100,7 @@ const vm = Vue.createApp({
             }
 
             //await this.apiHelp.post('api/GoogleAuth/Login', postdata)
-            await this.apiHelp.post(self.GoogleLoginUri, postdata)
+            await this.apiHelp.post(APISettings.GoogleLoginUri, postdata)
                 .then(function (response) {
                     result.code = 1;
                     result.JWT = response.data;

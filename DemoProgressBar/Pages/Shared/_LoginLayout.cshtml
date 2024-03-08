@@ -1,6 +1,4 @@
-﻿
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -8,12 +6,11 @@
     <title>@ViewData["Title"] - DemoProgressBar</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DemoProgressBar.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <div class="container-fluid p-0">
-        <main role="main" >
+<body background="/img/pexels-erin-raffensberger-20194688.jpg" style="background-size:cover">
+    <div class="container-fluid p-0" style="height:100%">
             @RenderBody()
-        </main>
     </div>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -26,14 +23,10 @@
     <environment include="Production">
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     </environment>
-
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="~/js/settings.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script>
-        var Apiconfig = {
-            API_BASE:'@Configuration["APIsetting:BaseUrl"]',
-            GoogleLoginUri: '@Configuration["APIsetting:GoogleLoginUri"]'
-        }
-    </script>
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

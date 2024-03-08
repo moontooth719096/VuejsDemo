@@ -1,4 +1,5 @@
-﻿const vm = Vue.createApp({
+﻿
+const vm = Vue.createApp({
     data() {
         return {
             chatlist: [],//聊天對象清單
@@ -8,7 +9,8 @@
             talklist: [],//聊天內容清單
             nowtalk: [],//當前聊天對象內容
             keyonmessage: '',//對話框輸入內容
-            config: window.appSettings,
+            //config: window.appSettings,
+            //settings: APISettings
         }
     },
     //created() {
@@ -23,9 +25,13 @@
     //},
     mounted() {
         var self = this;
+        //console.log(settings.BaseUrl);
+        //console.log(APISettings.BaseUrl);
+        //const token = window.getTokenCookie();
         const token = window.getTokenCookie();
+        let ChatHubUrl = new URL(APISettings.ChatHubUri, APISettings.BaseUrl).href;
         self.signalRconnect = new signalR.HubConnectionBuilder()
-            .withUrl(self.config.ChatHubUrl, {
+            .withUrl(ChatHubUrl, {
                 accessTokenFactory: () => token // 在這裡提供標頭
             }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
@@ -33,7 +39,7 @@
         self.initSigmalR(self);
     },
     methods: {
-       async initSigmalR(self = this) {
+        async initSigmalR(self = this) {
             await self.signalRconnect.start()
                 .then(() => {
                     self.connectionid = self.signalRconnect.connectionId;
@@ -92,17 +98,14 @@
                 //將收到的訊息加到對話清單裡
                 self.addTalk(senduser.connectionID, senduser.connectionID, message);
 
-                
+
 
                 //判斷目前沒有選擇跟任何人聊天,就給目前私訊你的人
                 if (self.nowtalkid == null || self.nowtalkid == undefined) {
                     self.talkselect(senduser.connectionID);
                 }
             });
-            
-        },
-        gettoken() {
-            return getTokenCookie();
+
         },
         //設定要聊天的人
         talkselect(selectid) {
@@ -111,7 +114,7 @@
             let user = _.find(nowusers, function (o) { return o.connectionID == selectid });
             //判斷使用者清單沒有這個人就加上
             if (user != null && user != undefined) {
-                if (user.noReadCount>0)
+                if (user.noReadCount > 0)
                     user.noReadCount = 0;
             }
             this.refreshChat();
@@ -185,12 +188,5 @@
             return regex.test(text);
         }
 
-    },
-    //watch: {
-    //    // 監聽 當前聊天對象ID 這個變數是否有變化
-    //    nowtalkid: function () {
-    //        //變化時直接刷新當前對話內容
-    //        this.refreshChat();
-    //    }
-    //}
-}).mount('#app')
+    }
+}).mount('#app');
