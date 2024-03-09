@@ -1,1 +1,1 @@
-﻿*{box-sizing:border-box;margin:0;padding:0;}html{height:100%;}html body{height:100%;}@media(max-width:768px){html{font-size:16px;}}
+﻿:root{--puddinghead-color:#6c0609;--puddingbody-color:#faf49c;}*{box-sizing:border-box;margin:0;padding:0;}@media(perfers-color-scheme:dark){body{background:#333;color:#fff;}}html{height:100%;}html body{height:100%;}@media(max-width:768px){html{font-size:16px;}}

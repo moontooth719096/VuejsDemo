@@ -1,9 +1,11 @@
 ﻿using DemoProgressBarAPI.Interfaces;
 using DemoProgressBarAPI.Models.YoutubeDonload;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoProgressBarAPI.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class YoutubeDownloadController : ControllerBase
