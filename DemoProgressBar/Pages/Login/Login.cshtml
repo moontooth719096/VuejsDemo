@@ -26,18 +26,21 @@
                 </div>
                 <div class="row">
                     <button type="submit" class="btn btn-primary col-2">Submit</button>
-                    <div id="buttonDiv" class="btn btn-primary col-2"></div>
+                    <div id="buttonDiv" class="col-2"></div>
                 </div>
                 
             </form>
         </div>
     </div>
-
-    @* <button id="signout_item" class="btn" :onclick="logOut()"></button> *@
-
 </div>
 
 @section Scripts {
     <script src="https://accounts.google.com/gsi/client"></script>
-    <script src="~/js/Login/Login.js" asp-append-version="true"></script>
+    <environment include="Development">
+        <script src="~/js/Login/LoginPage.js" asp-append-version="true"></script>
+    </environment>
+    <environment include="Production">
+        <script src="~/js/Login/LoginPage.es5.min.js" asp-append-version="true"></script>
+    </environment>
+    
 }

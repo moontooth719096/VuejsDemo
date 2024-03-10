@@ -16,6 +16,18 @@
     "inputFile": "wwwroot/js/ChatRoom/ChatRoom.js"
   },
   {
+    "outputFile": "wwwroot/js/Common/ApiHelper.es5.js",
+    "inputFile": "wwwroot/js/Common/ApiHelper.js"
+  },
+  {
+    "outputFile": "wwwroot/js/Login/LoginPage.es5.js",
+    "inputFile": "wwwroot/js/Login/LoginPage.js"
+  },
+  {
+    "outputFile": "wwwroot/js/Common/Login.es5.js",
+    "inputFile": "wwwroot/js/Common/Login.js"
+  },
+  {
     "outputFile": "Pages/Login/Login.cshtml.css",
     "inputFile": "Pages/Login/Login.cshtml.scss"
   }

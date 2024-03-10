@@ -12,23 +12,11 @@ var vm = Vue.createApp({
             keyonmessage: '' };
     },
     //對話框輸入內容
-    //config: window.appSettings,
-    //settings: APISettings
-    //created() {
-    //    var self = this;
-    //    self.signalRconnect = new signalR.HubConnectionBuilder()
-    //        .withUrl(self.config.ChatHubUrl, {
-    //            accessTokenFactory: () => getTokenCookie(), // 在這裡提供標頭
-    //        }) // 你的 SignalR Hub 地址
-    //        .withAutomaticReconnect()
-    //        .build();
-    //    self.initSigmalR(self);
-    //},
+    created: function created() {
+        window.LoginCheck();
+    },
     mounted: function mounted() {
         var self = this;
-        //console.log(settings.BaseUrl);
-        //console.log(APISettings.BaseUrl);
-        //const token = window.getTokenCookie();
         var token = window.getTokenCookie();
         var ChatHubUrl = new URL(APISettings.ChatHubUri, APISettings.BaseUrl).href;
         self.signalRconnect = new signalR.HubConnectionBuilder().withUrl(ChatHubUrl, {

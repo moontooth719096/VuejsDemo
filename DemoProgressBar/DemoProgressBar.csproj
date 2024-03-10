@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <None Include="compilerconfig.json" />
-    <None Include="wwwroot\js\Login\Login.js" />
+    <None Include="wwwroot\js\Login\LoginPage.js" />
   </ItemGroup>
 
   <ItemGroup>

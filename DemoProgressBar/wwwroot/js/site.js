@@ -1,26 +1,4 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-
-let actkn = 'mg_T'
-
-function getGoogleAcessToken() {
-    return  localStorage.getItem('googleAuthToken');
-}
-
-function getAPIGoogleAcessToken() {
-    return 'Bearer ' + localStorage.getItem('googleAuthToken');
-}
-
-function setGoogleAcessToken(token) {
-    localStorage.setItem('googleAuthToken', token);
-}
-
-function removeGoogleAcessToken(token) {
-    localStorage.removeItem("googleAuthToken");
-}
-
+﻿let actkn = 'mg_T'
 function setCookie(name, value, expirationTimestamp) {
     // 將時間戳記轉換為 Date 物件
     const expirationDate = new Date(expirationTimestamp);
@@ -44,8 +22,18 @@ function getCookie(name) {
     return null; // 如果找不到對應名稱的 cookie
 }
 
-function deleteCookie(name) {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=moon719096service.uk; secure`;
+function deleteCookie(cookieName) {
+    var cookies = document.cookie.split(";");
+
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+        if (name.trim() === cookieName) {
+            document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            break;
+        }
+    }
 }
 
 //設定JWTTokenCookie
@@ -62,4 +50,9 @@ function getTokenCookieBearer() {
         result = 'Bearer ' + getCookie(actkn);
     return result;
 }
+
+function removeTokenCookie() {
+    deleteCookie(actkn);
+}
+
 

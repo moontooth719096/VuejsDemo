@@ -18,7 +18,6 @@
 }*/
 @media(perfers-color-scheme:dark){
     body{background:#333;color:#fff}
-
 }
 
 html {
@@ -46,6 +45,14 @@ html {
     @include pad {
         font-size: 16px;
     }
+}
+
+.zoomimage {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
 }
 
 /*html {

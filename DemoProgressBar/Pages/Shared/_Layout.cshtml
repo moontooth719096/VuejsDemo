@@ -43,12 +43,6 @@
         </main>
     </div>
 
-@*     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - DemoProgressBar - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer> *@
-
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
 
@@ -70,7 +64,17 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.11/signalr.js"></script>
     <script src="~/js/settings.js" asp-append-version="true"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <environment include="Development">
+        <script src="~/js/Common/ApiHelper.js" asp-append-version="true"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/Common/Login.js" asp-append-version="true"></script>
+    </environment>
+    <environment include="Production">
+        <script src="~/js/Common/ApiHelper.es5.min.js" asp-append-version="true"></script>
+        <script src="~/js/site.es5.min.js" asp-append-version="true"></script>
+        <script src="~/js/Common/Login.es5.min.js" asp-append-version="true"></script>
+    </environment>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

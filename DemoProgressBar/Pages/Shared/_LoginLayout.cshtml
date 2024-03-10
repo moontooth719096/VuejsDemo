@@ -8,24 +8,35 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/DemoProgressBar.styles.css" asp-append-version="true" />
 </head>
-<body background="/img/pexels-erin-raffensberger-20194688.jpg" style="background-size:cover">
+<body class="zoomimage" background="/img/pexels-erin-raffensberger-20194688.jpg">
     <div class="container-fluid p-0" style="height:100%">
-            @RenderBody()
+        @RenderBody()
     </div>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 
     <environment include="Development">
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     </environment>
 
     <environment include="Production">
-    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     </environment>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="~/js/settings.js" asp-append-version="true"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <environment include="Development">
+        <script src="~/js/Common/ApiHelper.js" asp-append-version="true"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/Common/Login.js" asp-append-version="true"></script>
+    </environment>
+    <environment include="Production">
+        <script src="~/js/Common/ApiHelper.es5.min.js" asp-append-version="true"></script>
+        <script src="~/js/site.es5.min.js" asp-append-version="true"></script>
+        <script src="~/js/Common/Login.es5.min.js" asp-append-version="true"></script>
+    </environment>
+
 
 
     @await RenderSectionAsync("Scripts", required: false)

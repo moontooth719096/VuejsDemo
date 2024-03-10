@@ -37,6 +37,14 @@ html body {
   }
 }
 
+.zoomimage {
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+}
+
 /*html {
   position: relative;
   min-height: 100%;

@@ -37,7 +37,7 @@ namespace DemoProgressBarAPI.Controllers
                 // 驗證 Google Token
                 JWTToken = _googleOAuthService.Verify(request.Credential).Result;
           
-                return Content(JWTToken);
+                return Ok(JWTToken);
             }
             catch (Exception ex)
             {

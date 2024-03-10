@@ -5,3 +5,6 @@
 /*/Properties/PublishProfiles/*.user
 /DemoProgressBarAPI/YoutubeDonload
 /DemoProgressBarAPI/YoutubeDonloadZIP
+/DemoProgressBar/wwwroot/js/*/*.es5*.js
+/DemoProgressBar/wwwroot/css/*.css
+/DemoProgressBar/wwwroot/css/*/*.css

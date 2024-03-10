@@ -1,5 +1,6 @@
 ﻿const APISettings = {
     "BaseUrl": "https://localhost:7068/",
+    "LoginCheck":"api/Auth/LoginCkeck",
     "ChatHubUri": "/ChatHub",
     "GoogleLoginUri": "/api/GoogleAuth/Login",
     "YTDownloadHubUri": "/youtubeDownloadProgressHub",

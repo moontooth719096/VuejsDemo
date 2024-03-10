@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace DemoProgressBarAPI.Hubs
 {
+    [Authorize]
     public class YoutubeDownloadProgressHub : Hub
     {
         public override async Task OnConnectedAsync()
