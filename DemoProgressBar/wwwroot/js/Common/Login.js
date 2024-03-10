@@ -11,9 +11,9 @@ async function LoginCheck() {
             //如果token合法 但是當前在登入頁時導向首頁
             window.location.replace(PageUri.HomePage);
         }
-    } else if (isLiginPage) {
-        //如果token不合法，則跳至登入頁
-        window.location.replace(desiredURL);
+    } else if (!isLiginPage) {
+        //如果token不合法，且現在不在登入頁則跳至登入頁
+        window.location.replace(PageUri.LoginPageUri);
     }
 }
 

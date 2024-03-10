@@ -21,6 +21,9 @@ createApp({
         }
     },
     created() {
+        window.LoginCheck();
+    },
+    mounted() {
         const thatA = this
         let YTDownloadHubUrl = new URL(thatA.Settings.YTDownloadHubUri, thatA.Settings.API_BASE).href;
         thatA.hub.connection = new signalR.HubConnectionBuilder()

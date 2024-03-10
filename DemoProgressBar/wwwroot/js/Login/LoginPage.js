@@ -49,7 +49,7 @@ const vm = Vue.createApp({
             //token寫入Cookie
             setTokenCookie(getresult.JWT, responsePayload.exp * 1000);
             //再回去檢查一次token
-            this.checkLoginStatus();
+            window.LoginCheck();
 
         },
         async googleLogin(token) {
