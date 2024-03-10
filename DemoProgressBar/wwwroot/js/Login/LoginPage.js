@@ -30,14 +30,6 @@ const vm = Vue.createApp({
 
             google.accounts.id.prompt(); // also display the One Tap dialog
         },
-        //確認登入狀況
-        //async checkLoginStatus() {
-        //    //驗證cookie上的apptoken
-        //    let checkresult = await window.AppLoginCheck();
-        //    if (checkresult) {
-        //        window.location.replace("/"); // 如果token還有效就導向首頁
-        //    } 
-        //},
         //google登入按鈕的callback
         async handleCredentialResponse(response) {
             //呼叫GOOGLE登入api

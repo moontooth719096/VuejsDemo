@@ -12,10 +12,11 @@ createApp({
                 progress: 0,
                 message: ''
             },
-            hub: {
-                connection: {}
-                , HubConnId: ''
-            },
+            //hub: {
+            //    connection: {}
+            //    , HubConnId: ''
+            //},
+            hub: null,
             Settings: window.appSettings,
             apiHelp: null
         }
@@ -24,37 +25,42 @@ createApp({
         window.LoginCheck();
     },
     mounted() {
-        const thatA = this
-        let YTDownloadHubUrl = new URL(thatA.Settings.YTDownloadHubUri, thatA.Settings.API_BASE).href;
-        thatA.hub.connection = new signalR.HubConnectionBuilder()
-            .withUrl(YTDownloadHubUrl)// 你的 SignalR Hub 地址
+        const self = this
+        let YTDownloadHubUrl = new URL(APISettings.YTDownloadHubUri, APISettings.BaseUrl).href;
+        const token = window.getTokenCookie();
+        self.hub = new signalR.HubConnectionBuilder()
+            .withUrl(YTDownloadHubUrl, {
+                accessTokenFactory: () => token // 在這裡提供標頭
+            }) // 你的 SignalR Hub 地址
+            .withAutomaticReconnect()
             .build();
 
-        //與Server建立連線
-        thatA.hub.connection.start().then(function () {
-            console.log("連線完成");
-        }).catch(function (err) {
-            alert('連線錯誤: ' + err.toString());
-        });
-        // 更新進度
-        thatA.hub.connection.on("YoutubeDownloadProgress", function (message, percent) {
-            if (percent == 100) {
-                thatA.Donloadprogress.message = '檔案壓縮中..';
-            } else {
-                thatA.Donloadprogress.progress = percent;
-                thatA.Donloadprogress.message = message + ' ' + percent + '%';
-            }
-        });
-        let token = window.getTokenCookieBearer();
-        thatA.apiHelp = axios.create({
-            baseURL: thatA.Settings.API_BASE,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-            }
-        })
+        //thatA.apiHelp = axios.create({
+        //    baseURL: APISettings.BaseUrl,
+        //    headers: {
+        //        "Content-Type": "application/json",
+        //        "Authorization": token
+        //    }
+        //})
     },
     methods: {
+        initSignalR(self = this) {
+            //與Server建立連線
+            self.hub.start().then(function () {
+                console.log("連線完成");
+            }).catch(function (err) {
+                alert('連線錯誤: ' + err.toString());
+            });
+            // 更新進度
+            self.hub.on("YoutubeDownloadProgress", function (message, percent) {
+                if (percent == 100) {
+                    thatA.Donloadprogress.message = '檔案壓縮中..';
+                } else {
+                    thatA.Donloadprogress.progress = percent;
+                    thatA.Donloadprogress.message = message + ' ' + percent + '%';
+                }
+            });
+        },
         //取得音樂清單
         listget: function () {
             let params = {
@@ -69,18 +75,16 @@ createApp({
             //    .catch(function (error) {
             //        console.log(error);
             //    });
-            let token = window.getTokenCookieBearer();
-            let url = new URL(this.Settings.YTDownloadPlayListGetUri, this.Settings.API_BASE).href;
-            axios
-                .get(url, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    },
+            //let url = new URL(APISettings.YTDownloadPlayListGetUri, APISettings.API_BASE).href;
+            let apiHelp = window.BaseApiBase();
+            apiHelp
+                .get(APISettings.YTDownloadPlayListGetUri, {
                     params: params
                 })
                 .then((response) => {
                     if (response.data.length > 0) {
-                        this.Data = response.data;
+                        this.SearchList = response.data;
+
                     }
                 })
                 .catch(function (error) { // 请求失败处理
@@ -97,7 +101,8 @@ createApp({
             //只取id 與 title欄位
             this.SelectData = _.map(ndata, obj => _.pick(obj, ['id', 'title']));
             // axios.post('https://localhost:44353/api/YoutubeDownload/Download',
-            this.apiHelp.post(this.Settings.YoutubeDownloadUrl,
+            let apiHelp = window.BaseApiBase();
+            apiHelp.post(this.Settings.YoutubeDownloadUrl,
                 this.SelectData,
                 {
                     responseType: 'blob'

@@ -4,7 +4,7 @@
 function BaseApiBase() {
     let token = getTokenCookieBearer();
     let apiHelp = axios.create({
-        baseURL: 'https://localhost:7068/',
+        baseURL: APISettings.BaseUrl,
         headers: {
             "Content-Type": ContentType.json,
             "Authorization": token
