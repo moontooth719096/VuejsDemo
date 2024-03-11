@@ -38,5 +38,13 @@
   {
     "outputFile": "wwwroot/js/YoutubeDownload/YoutubeDownload.es5.js",
     "inputFile": "wwwroot/js/YoutubeDownload/YoutubeDownload.js"
+  },
+  {
+    "outputFile": "Pages/YoutubeDonload/Index.cshtml.css",
+    "inputFile": "Pages/YoutubeDonload/Index.cshtml.scss"
+  },
+  {
+    "outputFile": "Pages/Common/Loading.cshtml.css",
+    "inputFile": "Pages/Common/Loading.cshtml.scss"
   }
 ]

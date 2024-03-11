@@ -149,28 +149,20 @@ createApp({
         },
         //執行音樂下載
         download: function () {
-            document.getElementById('Download_Btn').disabled = true;
-            this.isShowDownload = true;
+            //document.getElementById('Download_Btn').disabled = true;
+            //this.isShowDownload = true;
             //篩選有勾選的資料
             let ndata = _.filter(this.SearchList, ['isCheck', true]);
             //只取id 與 title欄位
             this.SelectData = _.map(ndata, obj => _.pick(obj, ['id', 'title']));
-            // axios.post('https://localhost:44353/api/YoutubeDownload/Download',
             let apiHelp = window.BaseApiBase();
-            apiHelp.post(this.Settings.YoutubeDownloadUrl,
+            apiHelp.post(APISettings.YoutubeDownloadUri,
                 this.SelectData,
                 {
                     responseType: 'blob'
                 })
                 .then((response) => this.downloadData(response))
                 .catch((error) => console.log(error))
-            //axios.post(self.appSettings.YoutubeDownloadUrl,
-            //    this.SelectData,
-            //    {
-            //        responseType: 'blob'
-            //    })
-            //    .then((response) => this.downloadData(response))
-            //    .catch((error) => console.log(error))
         },
         //壓縮完後 下載檔案
         downloadData: function (data) {
@@ -181,7 +173,6 @@ createApp({
             let link = document.createElement('a')
             link.style.display = 'none'
             link.href = url
-            //link.setAttribute('download', 'excel.xlsx')
 
             let timestamp = new Date().getTime();
             link.download = `${timestamp}.zip`;

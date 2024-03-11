@@ -1,26 +1,21 @@
 ﻿@page
-@inject IConfiguration Configuration;
-@{
-    ViewData["Title"] = "YTDownload";
-}
 
-<link href="~/lib/bootstrap-table/css/bootstrap-table.min.css" rel="stylesheet" />
-
-<div id="YoutubeDonloadApp">
-    <div class="row m-1">
+<div id="YoutubeDonloadApp" class="row g-0 justify-content-center">
+    <div class="row">
         <input type="text" class="col-9 m-1" v-model="InputListID" />
         <button class="btn btn-primary col-1 m-1" :onclick="listget" :disabled="!InputListID">Search</button>
-        <button id="Download_Btn" class="btn btn-warning col-1 m-1" :onclick="download" v-model="SearchList" :disabled="SearchList">Download</button>
+        <button id="Download_Btn" class="btn btn-warning col-1 m-1" :onclick="download" :disabled="SearchList.length<=0">Download</button>
     </div>
     <div class="row">
         <div class="progress" v-show="Donloadprogress.progress">
             <div>{{Donloadprogress.message}}</div>
             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" v-bind:aria-valuenow="Donloadprogress.progress" aria-valuemin="0" aria-valuemax="100" :style="{ width: Donloadprogress.progress+'%' }"></div>
         </div>
-
+    </div>
+    <div class="row">
         <table class="table table-hover">
             <tbody>
-                <tr v-for="item in SearchList">
+                <tr v-for="item in SearchList" :onclick="">
                     <td class="w-5 align-middle">
                         <input type="checkbox" :id="item.id" v-model="item.isCheck" />
                     </td>
@@ -38,11 +33,10 @@
                 </tr>
             </tbody>
         </table>
-
     </div>
 </div>
 
-@section scripts{
+@section scripts {
     <environment include="Development">
         <script src="~/js/youtubedownload/youtubedownload.js" asp-append-version="true"></script>
     </environment>

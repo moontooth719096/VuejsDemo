@@ -1,0 +1,137 @@
+﻿@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+        opacity: 0; /* 設定透明度為 0% */
+    }
+
+    25% {
+        transform: rotate(180deg); /* 旋轉到一半時的狀態 */
+        border-color: rgba(52, 152, 219, 1);
+        border-top-color: transparent;
+        opacity: 0.5; /* 設定透明度為 50% */
+    }
+
+    40% {
+        opacity: 0; /* 設定透明度為 50% */
+    }
+
+    45% {
+        transform: rotate(180deg); /* 旋轉到一半時的狀態 */
+        border-color: rgba(255, 0, 0, 1);
+        border-top-color: transparent;
+        opacity: 0.5; /* 設定透明度為 50% */
+    }
+
+    60% {
+        opacity: 0; /* 設定透明度為 50% */
+    }
+
+    85% {
+        transform: rotate(180deg); /* 旋轉到一半時的狀態 */
+        border-color: rgba(52, 152, 219, 1);
+        border-top-color: transparent;
+        opacity: 0.5; /* 設定透明度為 50% */
+    }
+
+    100% {
+        transform: rotate(0deg);
+        opacity: 0; /* 設定透明度為 0% */
+    }
+}
+
+@keyframes show {
+    0% {
+        top: 100%; /* 調整小圓形的位置 */
+        opacity: 0; /* 設定透明度為 0% */
+    }
+
+    40% {
+        top: 40%; /* 調整小圓形的位置 */
+        border-bottom: 120px solid rgba(52, 152, 219, 1); /* 底边 */
+        border-left: 50px solid transparent; /* 左斜边 */
+        border-right: 50px solid transparent; /* 右斜边 */
+        border-radius: 70%;
+        opacity: 0.5; /* 設定透明度為 50% */
+    }
+
+    45% {
+        opacity: 0; /* 設定透明度為 50% */
+    }
+
+    50% {
+        top: 40%; /* 調整小圓形的位置 */
+        border-bottom: 120px solid rgba(255, 0, 0, 1); /* 底边 */
+        border-left: 50px solid transparent; /* 左斜边 */
+        border-right: 50px solid transparent; /* 右斜边 */
+        border-radius: 70%;
+        opacity: 0.5; /* 設定透明度為 50% */
+    }
+
+    55% {
+        opacity: 0; /* 設定透明度為 50% */
+    }
+
+    85% {
+        top: 40%; /* 調整小圓形的位置 */
+        border-bottom: 120px solid rgba(52, 152, 219, 1); /* 底边 */
+        border-left: 50px solid transparent; /* 左斜边 */
+        border-right: 50px solid transparent; /* 右斜边 */
+        border-radius: 70%;
+        opacity: 0.5; /* 設定透明度為 50% */
+    }
+
+    100% {
+        top: 100%; /* 調整小圓形的位置 */
+        opacity: 0; /* 設定透明度為 0% */
+    }
+}
+
+.container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+}
+
+.circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    border: 10px solid rgba(52, 152, 219, 1);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate 4s ease; /* 1 表示只重複一次 */
+    animation-iteration-count: infinite;
+    animation-delay: 0.2s; /* 延遲2秒開始動畫 */
+    /*animation-fill-mode: both;*/
+}
+
+.small-circle {
+    position: absolute;
+    top: 50px; /* 調整小圓形的位置 */
+    left: 50px; /* 調整小圓形的位置 */
+    width: 100px; /* 調整小圓形的大小 */
+    height: 100px; /* 調整小圓形的大小 */
+    border: 5px solid rgba(52, 152, 219, 0.7);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: rotate 4s ease; /* 1 表示只重複一次 */
+    animation-iteration-count: infinite;
+    /*animation-fill-mode: both;*/
+}
+
+.trapezoid {
+    position: absolute;
+    left: 50px; /* 調整小圓形的位置 */
+    width: 10px; /* 底部宽度 */
+    height: 0;
+    border-bottom: 120px solid rgba(52, 152, 219, 1); /* 底边 */
+    border-left: 50px solid transparent; /* 左斜边 */
+    border-right: 50px solid transparent; /* 右斜边 */
+    border-radius: 70%;
+    animation: show 4s ease; /* 1 表示只重複一次 */
+    /*animation-delay: 0.5s;*/
+    animation-iteration-count: infinite;
+    /*animation-fill-mode: both;*/
+}
