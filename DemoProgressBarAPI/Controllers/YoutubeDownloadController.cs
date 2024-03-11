@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DemoProgressBarAPI.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class YoutubeDownloadController : ControllerBase

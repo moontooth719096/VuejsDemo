@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using NAudio.Wave;
 using NReco.VideoConverter;
+using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using YoutubeExplode;
@@ -142,8 +143,18 @@ namespace DemoProgressBarAPI.Services
         private async Task<IEnumerable<PlaylistVideo>> SearchListYoutubeClientVer_Get(string PlaylistId)
         {
             var playlistUrl = "https://youtube.com/playlist?list=" + PlaylistId;
+            IEnumerable<PlaylistVideo> Result = Enumerable.Empty<PlaylistVideo>();
+            try 
+            {
+                Result = await _youtubeclient.Playlists.GetVideosAsync(playlistUrl);
+            }
+            catch (Exception ex)
+            {
 
-            return await _youtubeclient.Playlists.GetVideosAsync(playlistUrl);
+
+            }
+            return Result;
+
         }
         private async Task<MP4Streaminfo> VedioStream_Get(VideoId item, string folderPath, string filename)
         {

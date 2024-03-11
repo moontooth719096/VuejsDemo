@@ -30,5 +30,13 @@
   {
     "outputFile": "Pages/Login/Login.cshtml.css",
     "inputFile": "Pages/Login/Login.cshtml.scss"
+  },
+  {
+    "outputFile": "wwwroot/js/Common/common.es5.js",
+    "inputFile": "wwwroot/js/Common/common.js"
+  },
+  {
+    "outputFile": "wwwroot/js/YoutubeDownload/YoutubeDownload.es5.js",
+    "inputFile": "wwwroot/js/YoutubeDownload/YoutubeDownload.js"
   }
 ]

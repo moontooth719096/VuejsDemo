@@ -60,17 +60,20 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     </environment>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.11/signalr.js"></script>
     <script src="~/js/settings.js" asp-append-version="true"></script>
 
     <environment include="Development">
+        <script src="~/js/Common/common.js" asp-append-version="true"></script>
         <script src="~/js/Common/ApiHelper.js" asp-append-version="true"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
         <script src="~/js/Common/Login.js" asp-append-version="true"></script>
     </environment>
     <environment include="Production">
+        <script src="~/js/Common/common.es5.min.js" asp-append-version="true"></script>
         <script src="~/js/Common/ApiHelper.es5.min.js" asp-append-version="true"></script>
         <script src="~/js/site.es5.min.js" asp-append-version="true"></script>
         <script src="~/js/Common/Login.es5.min.js" asp-append-version="true"></script>

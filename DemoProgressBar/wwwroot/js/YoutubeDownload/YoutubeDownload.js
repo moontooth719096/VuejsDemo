@@ -4,7 +4,7 @@ const { createApp } = Vue
 createApp({
     data() {
         return {
-            InputListID: '',
+            InputListID: null,
             SearchList: [],
             SelectData: [],
             isShowDownload: false,
@@ -12,13 +12,7 @@ createApp({
                 progress: 0,
                 message: ''
             },
-            //hub: {
-            //    connection: {}
-            //    , HubConnId: ''
-            //},
             hub: null,
-            Settings: window.appSettings,
-            apiHelp: null
         }
     },
     created() {
@@ -63,34 +57,95 @@ createApp({
         },
         //取得音樂清單
         listget: function () {
+            this.SearchList = [];
             let params = {
-                PlaylistId: this.InputListID
+                PlaylistId: null
             }
-            //this.apiHelp.get(this.Settings.YTDownloadPlayListGetUri, { params })
-            //    .then(function (response) {
-            //       if (response.data.length > 0) {
-            //           this.SearchList = response.data;
-            //       } 
-            //    })
-            //    .catch(function (error) {
-            //        console.log(error);
-            //    });
-            //let url = new URL(APISettings.YTDownloadPlayListGetUri, APISettings.API_BASE).href;
+            //檢查傳入資料格式
+            let checkresult = this.listGetCheck(this.InputListID);
+            if (checkresult) {
+                return;
+            }
+            //取得ListID
+            let nlistid = this.getListID(this.InputListID);
+            if (!nlistid) {
+                return;
+            }
+
+            params.PlaylistId = nlistid;
+            //呼叫api查詢清單
             let apiHelp = window.BaseApiBase();
             apiHelp
                 .get(APISettings.YTDownloadPlayListGetUri, {
                     params: params
                 })
                 .then((response) => {
-                    if (response.data.length > 0) {
+                    let datas = response.data;
+                    if (datas !== null && datas.length > 0) {
                         this.SearchList = response.data;
-
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            text: "查無資料"
+                        });
                     }
                 })
-                .catch(function (error) { // 请求失败处理
+                .catch(function (error) {
                     console.log(error);
+                    Swal.fire({
+                        icon: "error",
+                        text: "發生錯誤!"
+                    });
                 })
 
+        },
+        listGetCheck(inputdata) {
+            let isOK = false;
+            //判斷傳入的質是否為空
+            if (window.isWhiteSpace(inputdata)) {
+                Swal.fire({
+                    icon: "error",
+                    text: "請輸入網址或是ListID"
+                });
+                isOK = true;
+            }
+            return isOK;
+        },
+        checkUrlPath(urlpath) {
+            // 定義簡單的URL正規表達式
+            var urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)([\w-./?%&=]*)?$/;
+
+            // 使用正規表達式進行匹配
+            return urlPattern.test(urlpath);
+        },
+        getListString(url) {
+            let urlParams = new URLSearchParams(new URL(url).search);
+
+            // 獲取 "list" 參數的值
+            let listParam = urlParams.get("list");
+
+            return listParam;
+        },
+        getListID(inputdata) {
+            //先判斷書入的是不是網址
+            if (!this.checkUrlPath(inputdata)) {
+                //否 擷取為list參數存入變數
+                return inputdata;
+            }
+
+            // 獲取 "list" 參數的值
+            let listParam = this.getListString(inputdata);
+            if (listParam == null || listParam === undefined || listParam == '') {
+                //判斷沒有跳出錯誤訊息
+                Swal.fire({
+                    icon: "error",
+                    text: "請確認您輸入的是合法的網址"
+                });
+                return;
+            } else {
+                //判斷有list參數 存入變數
+                return listParam;
+            }
         },
         //執行音樂下載
         download: function () {
