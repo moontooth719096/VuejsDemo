@@ -16,42 +16,35 @@ createApp({
         }
     },
     created() {
-        window.LoginCheck();
+        LoginCheck();
     },
     mounted() {
-        const self = this
         let YTDownloadHubUrl = new URL(APISettings.YTDownloadHubUri, APISettings.BaseUrl).href;
         const token = window.getTokenCookie();
-        self.hub = new signalR.HubConnectionBuilder()
+        this.hub = new signalR.HubConnectionBuilder()
             .withUrl(YTDownloadHubUrl, {
                 accessTokenFactory: () => token // 在這裡提供標頭
             }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
             .build();
-
-        //thatA.apiHelp = axios.create({
-        //    baseURL: APISettings.BaseUrl,
-        //    headers: {
-        //        "Content-Type": "application/json",
-        //        "Authorization": token
-        //    }
-        //})
+        this.initSignalR();
+        this.$refs.urlinput.focus();
     },
     methods: {
-        initSignalR(self = this) {
+        initSignalR() {
             //與Server建立連線
-            self.hub.start().then(function () {
+            this.hub.start().then(function () {
                 console.log("連線完成");
             }).catch(function (err) {
                 alert('連線錯誤: ' + err.toString());
             });
             // 更新進度
-            self.hub.on("YoutubeDownloadProgress", function (message, percent) {
+            this.hub.on("YoutubeDownloadProgress", function (message, percent) {
                 if (percent == 100) {
-                    thatA.Donloadprogress.message = '檔案壓縮中..';
+                    this.Donloadprogress.message = '檔案壓縮中..';
                 } else {
-                    thatA.Donloadprogress.progress = percent;
-                    thatA.Donloadprogress.message = message + ' ' + percent + '%';
+                    this.Donloadprogress.progress = percent;
+                    this.Donloadprogress.message = message + ' ' + percent + '%';
                 }
             });
         },
@@ -83,6 +76,7 @@ createApp({
                     let datas = response.data;
                     if (datas !== null && datas.length > 0) {
                         this.SearchList = response.data;
+                        this.$refs.downloadbtn.focus();
                     } else {
                         Swal.fire({
                             icon: "error",

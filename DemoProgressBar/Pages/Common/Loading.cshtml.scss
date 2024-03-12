@@ -8,7 +8,7 @@
         transform: rotate(180deg); /* 旋轉到一半時的狀態 */
         border-color: rgba(52, 152, 219, 1);
         border-top-color: transparent;
-        opacity: 0.5; /* 設定透明度為 50% */
+        opacity: 1; /* 設定透明度為 50% */
     }
 
     40% {
@@ -19,7 +19,7 @@
         transform: rotate(180deg); /* 旋轉到一半時的狀態 */
         border-color: rgba(255, 0, 0, 1);
         border-top-color: transparent;
-        opacity: 0.5; /* 設定透明度為 50% */
+        opacity: 1; /* 設定透明度為 50% */
     }
 
     60% {
@@ -30,7 +30,7 @@
         transform: rotate(180deg); /* 旋轉到一半時的狀態 */
         border-color: rgba(52, 152, 219, 1);
         border-top-color: transparent;
-        opacity: 0.5; /* 設定透明度為 50% */
+        opacity: 1; /* 設定透明度為 50% */
     }
 
     100% {
@@ -46,12 +46,12 @@
     }
 
     40% {
-        top: 40%; /* 調整小圓形的位置 */
+        top: 50%; /* 調整小圓形的位置 */
         border-bottom: 120px solid rgba(52, 152, 219, 1); /* 底边 */
         border-left: 50px solid transparent; /* 左斜边 */
         border-right: 50px solid transparent; /* 右斜边 */
         border-radius: 70%;
-        opacity: 0.5; /* 設定透明度為 50% */
+        opacity: 1; /* 設定透明度為 50% */
     }
 
     45% {
@@ -59,12 +59,12 @@
     }
 
     50% {
-        top: 40%; /* 調整小圓形的位置 */
+        top: 50%; /* 調整小圓形的位置 */
         border-bottom: 120px solid rgba(255, 0, 0, 1); /* 底边 */
         border-left: 50px solid transparent; /* 左斜边 */
         border-right: 50px solid transparent; /* 右斜边 */
         border-radius: 70%;
-        opacity: 0.5; /* 設定透明度為 50% */
+        opacity: 1; /* 設定透明度為 50% */
     }
 
     55% {
@@ -72,12 +72,12 @@
     }
 
     85% {
-        top: 40%; /* 調整小圓形的位置 */
+        top: 50%; /* 調整小圓形的位置 */
         border-bottom: 120px solid rgba(52, 152, 219, 1); /* 底边 */
         border-left: 50px solid transparent; /* 左斜边 */
         border-right: 50px solid transparent; /* 右斜边 */
         border-radius: 70%;
-        opacity: 0.5; /* 設定透明度為 50% */
+        opacity: 1; /* 設定透明度為 50% */
     }
 
     100% {
@@ -87,9 +87,9 @@
 }
 
 .container {
-    position: relative;
-    width: 200px;
-    height: 200px;
+    position: absolute;
+    width: 150px;
+    height: 150px;
 }
 
 .circle {
@@ -135,3 +135,4 @@
     animation-iteration-count: infinite;
     /*animation-fill-mode: both;*/
 }
+

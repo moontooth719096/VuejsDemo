@@ -1,10 +1,10 @@
 ﻿@page
 
-<div id="YoutubeDonloadApp" class="row g-0 justify-content-center">
+<div id="YoutubeDonloadApp" class="row g-0 mt-2 justify-content-center">
     <div class="row">
-        <input type="text" class="col-9 m-1" v-model="InputListID" />
+        <input type="text" class="col-9 m-1" v-model="InputListID" ref="urlinput"/>
         <button class="btn btn-primary col-1 m-1" :onclick="listget" :disabled="!InputListID">Search</button>
-        <button id="Download_Btn" class="btn btn-warning col-1 m-1" :onclick="download" :disabled="SearchList.length<=0">Download</button>
+        <button id="Download_Btn" class="btn btn-warning col-1 m-1" :onclick="download" :disabled="SearchList.length<=0" ref="downloadbtn">Download</button>
     </div>
     <div class="row">
         <div class="progress" v-show="Donloadprogress.progress">
@@ -13,21 +13,21 @@
         </div>
     </div>
     <div class="row">
-        <table class="table table-hover">
+        <table class="table table-bordered table-hover">
             <tbody>
-                <tr v-for="item in SearchList" :onclick="">
-                    <td class="w-5 align-middle">
+                <tr v-for="item in SearchList" style="height:15%">
+                    <td class="w-5 align-middle text-center">
                         <input type="checkbox" :id="item.id" v-model="item.isCheck" />
                     </td>
-                    <td class="w-15">
-                        <a :href="item.url" target="_blank" v-bind>
-                            <img style="width:100px;" :src="item.thumbnailUrl" class="img-fluid img-thumbnail" alt="...">
+                    <td class="w-auto text-center">
+                        <a :href="item.url" target="_blank">
+                            <img style="width:6.25rem;" :src="item.thumbnailUrl" class="img-fluid img-thumbnail" alt="...">
                         </a>
                     </td>
                     <td class="w-auto align-middle">
                         {{ item.title }}
                     </td>
-                    <td class="w-5 align-middle">
+                    <td class="w-5 align-middle text-center">
                         {{ item.playTime }}
                     </td>
                 </tr>
