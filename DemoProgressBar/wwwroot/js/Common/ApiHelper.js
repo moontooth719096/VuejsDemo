@@ -5,6 +5,7 @@ function BaseApiBase() {
     let token = getTokenCookieBearer();
     let apiHelp = axios.create({
         baseURL: APISettings.BaseUrl,
+        timeout: 3000,
         headers: {
             "Content-Type": ContentType.json,
             "Authorization": token
@@ -16,8 +17,7 @@ function BaseApiBase() {
             return config;
         },
         function (error) {
-            // 对请求错误做些什么
-
+            document.getElementById('LodingBoard').style.display = 'none';
             return Promise.reject(error);
         }
     );
@@ -29,12 +29,45 @@ function BaseApiBase() {
             return response;
         },
         function (error) {
-            // 对响应错误做些什么
+            document.getElementById('LodingBoard').style.display = 'none';
             return Promise.reject(error);
         }
     );
 
     return apiHelp;
+}
+
+function axiosGet(url, params) {
+    let apiHelp = window.BaseApiBase();
+    apiHelp.get(url, {
+            params: params
+        })
+        .then((response) => { return response; })
+        .catch(function (error) {
+            errorprocess(error.response);
+        })
+}
+
+function errorprocess(response) {
+    console.log(response);
+    switch (response.status) {
+        case 401:
+            Swal.fire({
+                icon: "warning",
+                text: "登入資訊已過期，請重新登入"
+            }).then(()=>{
+                location.replace(PageUri.LoginPageUri);
+            });
+            
+            break;
+        default:
+            Swal.fire({
+                icon: "error",
+                text: "發生錯誤!"
+            });
+            break
+    }
+  
 }
 
 

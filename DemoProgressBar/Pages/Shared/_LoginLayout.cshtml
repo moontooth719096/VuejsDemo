@@ -12,7 +12,9 @@
     <div class="container-fluid p-0" style="height:100%">
         @RenderBody()
     </div>
-
+    <div id="LodingBoard" style="display:none">
+        @await Html.PartialAsync("~/Pages/Common/Loading.cshtml")
+    </div>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 
@@ -36,8 +38,6 @@
         <script src="~/js/site.es5.min.js" asp-append-version="true"></script>
         <script src="~/js/Common/Login.es5.min.js" asp-append-version="true"></script>
     </environment>
-
-
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

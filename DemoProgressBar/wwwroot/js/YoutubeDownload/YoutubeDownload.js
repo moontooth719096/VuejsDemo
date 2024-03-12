@@ -50,10 +50,12 @@ createApp({
         },
         //取得音樂清單
         listget: function () {
+
             this.SearchList = [];
             let params = {
                 PlaylistId: null
             }
+
             //檢查傳入資料格式
             let checkresult = this.listGetCheck(this.InputListID);
             if (checkresult) {
@@ -66,31 +68,44 @@ createApp({
             }
 
             params.PlaylistId = nlistid;
+
+            let getresult = axiosGet(APISettings.YTDownloadPlayListGetUri, {
+                params: params
+            });
+            if (getresult != null && getresult.datas !== null && getresult.datas.length > 0) {
+                this.SearchList = getresult.data;
+                this.$refs.downloadbtn.focus();
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    text: "查無資料"
+                });
+            }
             //呼叫api查詢清單
-            let apiHelp = window.BaseApiBase();
-            apiHelp
-                .get(APISettings.YTDownloadPlayListGetUri, {
-                    params: params
-                })
-                .then((response) => {
-                    let datas = response.data;
-                    if (datas !== null && datas.length > 0) {
-                        this.SearchList = response.data;
-                        this.$refs.downloadbtn.focus();
-                    } else {
-                        Swal.fire({
-                            icon: "error",
-                            text: "查無資料"
-                        });
-                    }
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    Swal.fire({
-                        icon: "error",
-                        text: "發生錯誤!"
-                    });
-                })
+            //let apiHelp = window.BaseApiBase();
+            //apiHelp
+            //    .get(APISettings.YTDownloadPlayListGetUri, {
+            //        params: params
+            //    })
+            //    .then((response) => {
+            //        let datas = response.data;
+            //        if (datas !== null && datas.length > 0) {
+            //            this.SearchList = response.data;
+            //            this.$refs.downloadbtn.focus();
+            //        } else {
+            //            Swal.fire({
+            //                icon: "error",
+            //                text: "查無資料"
+            //            });
+            //        }
+            //    })
+            //    .catch(function (error) {
+            //        console.log(error);
+            //        Swal.fire({
+            //            icon: "error",
+            //            text: "發生錯誤!"
+            //        });
+            //    })
 
         },
         listGetCheck(inputdata) {
@@ -105,13 +120,6 @@ createApp({
             }
             return isOK;
         },
-        checkUrlPath(urlpath) {
-            // 定義簡單的URL正規表達式
-            var urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)([\w-./?%&=]*)?$/;
-
-            // 使用正規表達式進行匹配
-            return urlPattern.test(urlpath);
-        },
         getListString(url) {
             let urlParams = new URLSearchParams(new URL(url).search);
 
@@ -122,7 +130,7 @@ createApp({
         },
         getListID(inputdata) {
             //先判斷書入的是不是網址
-            if (!this.checkUrlPath(inputdata)) {
+            if (!isUrlPath(inputdata)) {
                 //否 擷取為list參數存入變數
                 return inputdata;
             }
