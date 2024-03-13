@@ -46,5 +46,9 @@
   {
     "outputFile": "Pages/Common/Loading.cshtml.css",
     "inputFile": "Pages/Common/Loading.cshtml.scss"
+  },
+  {
+    "outputFile": "wwwroot/js/Home.es5.js",
+    "inputFile": "wwwroot/js/Home.js"
   }
 ]

@@ -38,11 +38,6 @@ function BaseApiBase(timeoutset = 3000) {
 }
 
 function axiosGet(url, params,timeoutset = 3000) {
-    //apiHelp.get(url, params)
-    //    .then((response) => { return Promise.resolve(response);})
-    //    .catch(function (error) {
-    //        errorprocess(error.response);
-    //    })
     return new Promise((resolve) => {
         let apiHelp = BaseApiBase(timeoutset);
         apiHelp.get(url, params)
@@ -57,11 +52,6 @@ function axiosGet(url, params,timeoutset = 3000) {
 }
 
 function axiosPost(url, params, timeoutset = 3000, responsetype = 'application/json') {
-    //apiHelp.get(url, params)
-    //    .then((response) => { return Promise.resolve(response);})
-    //    .catch(function (error) {
-    //        errorprocess(error.response);
-    //    })
     return new Promise((resolve) => {
         let apiHelp = BaseApiBase(timeoutset);
         apiHelp.post(url, params,{

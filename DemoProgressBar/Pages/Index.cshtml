@@ -4,3 +4,13 @@
     ViewData["Title"] = "Home page";
 }
 
+<div id="Homeapp"></div>
+
+@section Scripts {
+    <environment include="Development">
+        <script src="~/js/Home.js" asp-append-version="true"></script>
+    </environment>
+    <environment include="Production">
+        <script src="~/js/Home.es5.min.js" asp-append-version="true"></script>
+    </environment>
+}
