@@ -36,8 +36,13 @@ createApp({
             this.hub.start().then(function () {
                 console.log("連線完成");
             }).catch(function (err) {
-                alert('連線錯誤: ' + err.toString());
+                console.log(err);
+                Swal.fire({
+                    icon: "error",
+                    text: '連線錯誤: ' + err.toString()
+                });
             });
+
             // 更新進度
             this.hub.on("YoutubeDownloadProgress", function (message, percent) {
                 if (percent == 100) {
