@@ -49,7 +49,7 @@ createApp({
             });
         },
         //取得音樂清單
-        listget: function () {
+        listget:async function () {
 
             this.SearchList = [];
             let params = {
@@ -69,11 +69,13 @@ createApp({
 
             params.PlaylistId = nlistid;
 
-            let getresult = axiosGet(APISettings.YTDownloadPlayListGetUri, {
+            let response = await axiosGet(APISettings.YTDownloadPlayListGetUri, {
                 params: params
             });
-            if (getresult != null && getresult.datas !== null && getresult.datas.length > 0) {
-                this.SearchList = getresult.data;
+
+            //判斷回傳是否有值
+            if (response != null && response.data !== null && response.data.length > 0) {
+                this.SearchList = response.data;
                 this.$refs.downloadbtn.focus();
             } else {
                 Swal.fire({
@@ -81,31 +83,6 @@ createApp({
                     text: "查無資料"
                 });
             }
-            //呼叫api查詢清單
-            //let apiHelp = window.BaseApiBase();
-            //apiHelp
-            //    .get(APISettings.YTDownloadPlayListGetUri, {
-            //        params: params
-            //    })
-            //    .then((response) => {
-            //        let datas = response.data;
-            //        if (datas !== null && datas.length > 0) {
-            //            this.SearchList = response.data;
-            //            this.$refs.downloadbtn.focus();
-            //        } else {
-            //            Swal.fire({
-            //                icon: "error",
-            //                text: "查無資料"
-            //            });
-            //        }
-            //    })
-            //    .catch(function (error) {
-            //        console.log(error);
-            //        Swal.fire({
-            //            icon: "error",
-            //            text: "發生錯誤!"
-            //        });
-            //    })
 
         },
         listGetCheck(inputdata) {
@@ -150,27 +127,18 @@ createApp({
             }
         },
         //執行音樂下載
-        download: function () {
-            //document.getElementById('Download_Btn').disabled = true;
-            //this.isShowDownload = true;
+        download: async function () {
             //篩選有勾選的資料
             let ndata = _.filter(this.SearchList, ['isCheck', true]);
             //只取id 與 title欄位
             this.SelectData = _.map(ndata, obj => _.pick(obj, ['id', 'title']));
-            let apiHelp = window.BaseApiBase();
-            apiHelp.post(APISettings.YoutubeDownloadUri,
-                this.SelectData,
-                {
-                    responseType: 'blob'
-                })
-                .then((response) => this.downloadData(response))
-                .catch((error) => console.log(error))
+            let result = await axiosPost(APISettings.YoutubeDownloadUri, this.SelectData, 300000, 'blob');
+            if (result !== null && result.data !== null) {
+                this.downloadData(result);
+            }
         },
         //壓縮完後 下載檔案
         downloadData: function (data) {
-            if (!data) {
-                return
-            }
             let url = window.URL.createObjectURL(new Blob([data.data]))
             let link = document.createElement('a')
             link.style.display = 'none'

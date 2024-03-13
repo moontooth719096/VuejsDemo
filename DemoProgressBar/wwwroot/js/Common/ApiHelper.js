@@ -1,11 +1,11 @@
 ﻿const ContentType = {
     json: 'application/json'
 }
-function BaseApiBase() {
+function BaseApiBase(timeoutset = 3000) {
     let token = getTokenCookieBearer();
     let apiHelp = axios.create({
         baseURL: APISettings.BaseUrl,
-        timeout: 3000,
+        timeout: timeoutset,
         headers: {
             "Content-Type": ContentType.json,
             "Authorization": token
@@ -25,8 +25,8 @@ function BaseApiBase() {
     apiHelp.interceptors.response.use(
         function (response) {
             document.getElementById('LodingBoard').style.display = 'none';
-       
-            return response;
+
+            return Promise.resolve(response);
         },
         function (error) {
             document.getElementById('LodingBoard').style.display = 'none';
@@ -37,15 +37,39 @@ function BaseApiBase() {
     return apiHelp;
 }
 
-function axiosGet(url, params) {
-    let apiHelp = window.BaseApiBase();
-    apiHelp.get(url, {
-            params: params
-        })
-        .then((response) => { return response; })
-        .catch(function (error) {
-            errorprocess(error.response);
-        })
+function axiosGet(url, params,timeoutset = 3000) {
+    //apiHelp.get(url, params)
+    //    .then((response) => { return Promise.resolve(response);})
+    //    .catch(function (error) {
+    //        errorprocess(error.response);
+    //    })
+    return new Promise((resolve) => {
+        let apiHelp = BaseApiBase(timeoutset);
+        apiHelp.get(url, params)
+            .then(response => {
+                resolve(response);
+            })
+            .catch(error => {
+                errorprocess(error.response);
+                //reject(error);
+            });
+    });
+}
+
+function axiosPost(url, params, timeoutset = 3000, responsetype = 'application/json') {
+    //apiHelp.get(url, params)
+    //    .then((response) => { return Promise.resolve(response);})
+    //    .catch(function (error) {
+    //        errorprocess(error.response);
+    //    })
+    return new Promise((resolve) => {
+        let apiHelp = BaseApiBase(timeoutset);
+        apiHelp.post(url, params,{
+            responseType: responsetype
+            })
+            .then((response) =>resolve(response))
+            .catch((error) => errorprocess(error.response))
+    });
 }
 
 function errorprocess(response) {
