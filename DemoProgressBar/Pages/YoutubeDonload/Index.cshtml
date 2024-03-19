@@ -3,11 +3,11 @@
 <div id="YoutubeDonloadApp" class="row g-0 mt-2 justify-content-center">
     <div class="row">
         <input type="text" class="col-9 m-1" v-model="InputListID" ref="urlinput"/>
-        <button class="btn btn-primary col-1 m-1" :onclick="listget" :disabled="!InputListID">Search</button>
-        <button id="Download_Btn" class="btn btn-warning col-1 m-1" :onclick="download" :disabled="SearchList.length<=0" ref="downloadbtn">Download</button>
+        <button class="btn btn-primary col-1 m-1" :onclick="listget" v-bind:disabled="!InputListID">Search</button>
+        <button id="Download_Btn" class="btn btn-warning col-1 m-1" :onclick="download" v-bind:disabled="SearchList.length<=0" ref="downloadbtn">Download</button>
     </div>
     <div class="row">
-        <div class="progress" v-show="Donloadprogress.progress">
+        <div class="progress">
             <div>{{Donloadprogress.message}}</div>
             <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" v-bind:aria-valuenow="Donloadprogress.progress" aria-valuemin="0" aria-valuemax="100" :style="{ width: Donloadprogress.progress+'%' }"></div>
         </div>

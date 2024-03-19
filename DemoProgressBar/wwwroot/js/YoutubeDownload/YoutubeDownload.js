@@ -7,7 +7,6 @@ createApp({
             InputListID: null,
             SearchList: [],
             SelectData: [],
-            isShowDownload: false,
             Donloadprogress: {
                 progress: 0,
                 message: ''
@@ -15,10 +14,8 @@ createApp({
             hub: null,
         }
     },
-    created() {
-        LoginCheck();
-    },
-    mounted() {
+    async created() {
+        await LoginCheck();
         let YTDownloadHubUrl = new URL(APISettings.YTDownloadHubUri, APISettings.BaseUrl).href;
         const token = window.getTokenCookie();
         this.hub = new signalR.HubConnectionBuilder()
@@ -27,13 +24,18 @@ createApp({
             }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
             .build();
-        this.initSignalR();
+        this.initSignalR(this);
+    },
+    mounted() {
+       
+       
+       
         this.$refs.urlinput.focus();
     },
     methods: {
-        initSignalR() {
+        initSignalR(self) {
             //與Server建立連線
-            this.hub.start().then(function () {
+            self.hub.start().then(function () {
                 console.log("連線完成");
             }).catch(function (err) {
                 console.log(err);
@@ -44,12 +46,12 @@ createApp({
             });
 
             // 更新進度
-            this.hub.on("YoutubeDownloadProgress", function (message, percent) {
+            self.hub.on("YoutubeDownloadProgress", function (message, percent) {
                 if (percent == 100) {
-                    this.Donloadprogress.message = '檔案壓縮中..';
+                    self.Donloadprogress.message = '檔案壓縮中..';
                 } else {
-                    this.Donloadprogress.progress = percent;
-                    this.Donloadprogress.message = message + ' ' + percent + '%';
+                    self.Donloadprogress.progress = percent;
+                    self.Donloadprogress.message = message + ' ' + percent + '%';
                 }
             });
         },
@@ -161,7 +163,6 @@ createApp({
             this.Donloadprogress.message = '檔案下載完成';
             this.Donloadprogress.progress = 0;
             this.Donloadprogress.message = '';
-            this.isShowDownload = false;
         }
     }
 }).mount('#YoutubeDonloadApp')
