@@ -26,6 +26,24 @@ namespace DemoProgressBarAPI.Services
             _youtubeclient = new YoutubeClient();
         }
 
+        public async IAsyncEnumerable<YotubeDownloadListViewModel> VideoGet(string VideoID)
+        {
+            //取得youtube清單
+            Video Music = await SearchYoutubeClientVer_Get(VideoID);
+           
+            if (Music != null)
+            {
+                yield return new YotubeDownloadListViewModel
+               {
+                   IsCheck = true,
+                   Title = Music.Title,
+                   Id = Music.Id,
+                   ThumbnailUrl = Music.Thumbnails.SingleOrDefault(Thumbnail => Thumbnail.Resolution.Area == Music.Thumbnails.Max(Thumbnail => Thumbnail.Resolution.Area)).Url,
+                   PlayTime = Music.Duration.ToString()
+               };
+            }
+        }
+
         public async IAsyncEnumerable<YotubeDownloadListViewModel> PlayListGet(string PlaylistId)
         {
             //取得youtube清單
@@ -49,6 +67,8 @@ namespace DemoProgressBarAPI.Services
                 }
             }
         }
+
+
         public async Task<IActionResult> DownloadApp(IEnumerable<SelectDataModel> SelectData)
         {
             APIResponseModel result = new APIResponseModel { Code = 1 };
@@ -140,6 +160,24 @@ namespace DemoProgressBarAPI.Services
 
         }
 
+        private async Task<Video> SearchYoutubeClientVer_Get(string VedioID)
+        {
+            //var playlistUrl = "https://youtube.com/playlist?list=" + PlaylistId;
+            Video Result = null;
+            try
+            {
+                Result = await _youtubeclient.Videos.GetAsync(VedioID);
+
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+            return Result;
+
+        }
+
         private async Task<IEnumerable<PlaylistVideo>> SearchListYoutubeClientVer_Get(string PlaylistId)
         {
             var playlistUrl = "https://youtube.com/playlist?list=" + PlaylistId;
@@ -165,8 +203,6 @@ namespace DemoProgressBarAPI.Services
 
                 // 擷取聲音(取最高音質
                 var audioStreamInfo = video.GetAudioOnlyStreams().GetWithHighestBitrate();
-                //var audioStreamInfo = video.GetAudioStreams().GetWithHighestBitrate();
-                //var audioStreamInfo = video.GetAudioOnlyStreams().Where(x=>x.Container == Container.Mp4).GetWithHighestBitrate();
 
                 //設定要轉換的kbps
                 int nowkbps = kbpsSet(audioStreamInfo.Bitrate.KiloBitsPerSecond);
@@ -174,10 +210,6 @@ namespace DemoProgressBarAPI.Services
 
                 //取得stream
                 var audioStream = await _youtubeclient.Videos.Streams.GetAsync(audioStreamInfo);
-                //string  MP4outPath = Path.Combine(folderPath, filename);
-                //outPath = outPath.Replace(".mp3", ".mp4");
-                //下載
-                //await _youtubeclient.Videos.Streams.DownloadAsync(audioStreamInfo, MP4outPath);
                 
                 
                 String SaveMP3File = filename.Replace(".mp4", ".mp3");
@@ -247,12 +279,11 @@ namespace DemoProgressBarAPI.Services
                         vidtask.Wait();
                         count++;
                         percentage = Math.Round((count / TotalCount) * 100);
-               
+
                         await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
                         await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。");
                     }));
                     await Task.WhenAll(tasks);
-                    //Convert.ConvertMedia(MP4outPath, null, MP3outPath, null, settings);
 
                 }
                 catch (Exception ex)

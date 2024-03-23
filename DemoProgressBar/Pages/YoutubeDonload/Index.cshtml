@@ -6,13 +6,13 @@
         <button class="btn btn-primary col-1 m-1" :onclick="listget" v-bind:disabled="!InputListID">Search</button>
         <button id="Download_Btn" class="btn btn-warning col-1 m-1" :onclick="download" v-bind:disabled="SearchList.length<=0" ref="downloadbtn">Download</button>
     </div>
-    <div class="row">
-        <div class="progress">
-            <div>{{Donloadprogress.message}}</div>
-            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" v-bind:aria-valuenow="Donloadprogress.progress" aria-valuemin="0" aria-valuemax="100" :style="{ width: Donloadprogress.progress+'%' }"></div>
+    <div class="row m-1">
+        <div class="col-2">{{Donloadprogress.message}}</div>
+        <div class="progress col">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" v-bind:aria-valuenow="Donloadprogress.progress" aria-valuemin="0" aria-valuemax="100" :style="{ width: Donloadprogress.progress+'%' }">{{Donloadprogress.progress+'%'}}</div>
         </div>
     </div>
-    <div class="row">
+    <div class="row m-1">
         <table class="table table-bordered table-hover">
             <tbody>
                 <tr v-for="item in SearchList" style="height:15%">

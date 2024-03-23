@@ -17,6 +17,11 @@ namespace DemoProgressBarAPI.Controllers
             _youtubeservice = youtubeservice;
         }
         [HttpGet]
+        public IActionResult VideoGet(string VideoID)
+        {
+          return  Ok(_youtubeservice.VideoGet(VideoID));
+        }
+        [HttpGet]
         public IActionResult PlayListGet(string PlaylistId)
         {
           return  Ok(_youtubeservice.PlayListGet(PlaylistId));

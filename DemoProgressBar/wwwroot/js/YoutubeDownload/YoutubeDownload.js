@@ -12,10 +12,14 @@ createApp({
                 message: ''
             },
             hub: null,
+            UrlType:{
+                PlayListType: 2,
+                VedioType:1
+            }
         }
     },
-    async created() {
-        await LoginCheck();
+    created() {
+        LoginCheck();
         let YTDownloadHubUrl = new URL(APISettings.YTDownloadHubUri, APISettings.BaseUrl).href;
         const token = window.getTokenCookie();
         this.hub = new signalR.HubConnectionBuilder()
@@ -56,27 +60,92 @@ createApp({
             });
         },
         //取得音樂清單
-        listget:async function () {
-
+         listget:async function () {
             this.SearchList = [];
-            let params = {
-                PlaylistId: null
-            }
-
             //檢查傳入資料格式
-            let checkresult = this.listGetCheck(this.InputListID);
-            if (checkresult) {
-                return;
-            }
-            //取得ListID
-            let nlistid = this.getListID(this.InputListID);
-            if (!nlistid) {
+            let isNotOK = this.listGetCheck(this.InputListID);
+            if (isNotOK) {
                 return;
             }
 
-            params.PlaylistId = nlistid;
+            //判斷是ListID 還是 VideoID
+            let checkGet = this.getID(this.InputListID);
+             if (checkGet.Type == null || checkGet.Type === undefined || checkGet.Type == '') {
+                //判斷沒有跳出錯誤訊息
+                Swal.fire({
+                    icon: "error",
+                    text: "請確認您輸入的是合法的網址"
+                });
+                return;
+            } 
 
-            let response = await axiosGet(APISettings.YTDownloadPlayListGetUri, {
+            //依照Type呼叫API
+            switch (checkGet.Type) {
+                case this.UrlType.VedioType:
+                    this.videoAPICall(checkGet.ID);
+                    break;
+                case this.UrlType.PlayListType:
+                    this.playListAPICall(checkGet.ID);
+                    break;
+                default:
+                    break;
+            }
+        },
+        listGetCheck(inputdata) {
+            //判斷傳入的質是否為空
+            if (window.isWhiteSpace(inputdata)) {
+                Swal.fire({
+                    icon: "error",
+                    text: "請輸入網址或是ListID"
+                });
+                return true;
+            }
+            //判斷輸入的是不是網址
+            if (!isUrlPath(inputdata)) {
+                Swal.fire({
+                    icon: "error",
+                    text: "請輸入網址或是ListID"
+                });
+                return true;
+            }
+            return false;
+        },
+        getUrlParamKey(url,key) {
+            let urlParams = new URLSearchParams(new URL(url).search);
+            // 獲取 "list" 參數的值
+            let listParam = urlParams.get(key);
+            return listParam;
+        },
+        getID(url) {
+            let result = {
+               Type:null,
+                ID: null
+            };
+            // 獲取 "list" 參數的值
+            let listParam = this.getUrlParamKey(url,"list");
+            if (listParam !== null && listParam !== undefined && listParam != '') {
+                //判斷有list參數 存入變數
+                result.Type = this.UrlType.PlayListType;
+                result.ID = listParam
+                return result;
+            };
+
+            // 獲取 "v" 參數的值
+            let videoID = this.getUrlParamKey(url,"v");
+            if (videoID !== null && videoID !== undefined && videoID != '') {
+                //判斷有list參數 存入變數
+                result.Type = this.UrlType.VedioType;
+                result.ID = videoID
+                return result;
+            };
+            return result;
+        },
+        async videoAPICall(videoid) {
+            let params = {
+                VideoID: videoid
+            };
+
+            let response = await axiosGet(APISettings.YTDownloadVideoGetUri, {
                 params: params
             });
 
@@ -90,52 +159,31 @@ createApp({
                     text: "查無資料"
                 });
             }
-
         },
-        listGetCheck(inputdata) {
-            let isOK = false;
-            //判斷傳入的質是否為空
-            if (window.isWhiteSpace(inputdata)) {
-                Swal.fire({
-                    icon: "error",
-                    text: "請輸入網址或是ListID"
-                });
-                isOK = true;
-            }
-            return isOK;
-        },
-        getListString(url) {
-            let urlParams = new URLSearchParams(new URL(url).search);
+        async playListAPICall(playlistid) {
+            let params = {
+                PlaylistId: playlistid
+            };
 
-            // 獲取 "list" 參數的值
-            let listParam = urlParams.get("list");
+            let response = await axiosGet(APISettings.YTDownloadPlayListGetUri, {
+                params: params
+            })
 
-            return listParam;
-        },
-        getListID(inputdata) {
-            //先判斷書入的是不是網址
-            if (!isUrlPath(inputdata)) {
-                //否 擷取為list參數存入變數
-                return inputdata;
-            }
-
-            // 獲取 "list" 參數的值
-            let listParam = this.getListString(inputdata);
-            if (listParam == null || listParam === undefined || listParam == '') {
-                //判斷沒有跳出錯誤訊息
-                Swal.fire({
-                    icon: "error",
-                    text: "請確認您輸入的是合法的網址"
-                });
-                return;
+            //判斷回傳是否有值
+            if (response != null && response.data !== null && response.data.length > 0) {
+                this.SearchList = response.data;
+                this.$refs.downloadbtn.focus();
             } else {
-                //判斷有list參數 存入變數
-                return listParam;
+                Swal.fire({
+                    icon: "error",
+                    text: "查無資料"
+                });
             }
         },
         //執行音樂下載
         download: async function () {
             //篩選有勾選的資料
+            let ste = this.SearchList.filter(data => data.isCheck);
             let ndata = _.filter(this.SearchList, ['isCheck', true]);
             //只取id 與 title欄位
             this.SelectData = _.map(ndata, obj => _.pick(obj, ['id', 'title']));

@@ -5,6 +5,7 @@
     "GoogleLoginUri": "/api/GoogleAuth/Login",
     "YTDownloadHubUri": "/youtubeDownloadProgressHub",
     "YTDownloadPlayListGetUri": "/api/YoutubeDownload/PlayListGet",
+    "YTDownloadVideoGetUri": "/api/YoutubeDownload/VideoGet",
     "YoutubeDownloadUri": "api/YoutubeDownload/Download"
 }
 const GoogleOAuth = {
