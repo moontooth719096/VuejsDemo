@@ -57,7 +57,8 @@ const vm = Vue.createApp({
                 .then(function (response) {
 
                     result.code = 1;
-                    result.JWT = response.data;
+                    result.JWT = response.data.jwt;
+                    userinfo = response.data.userInfo;
                 })
                 .catch(function (error) {
                     console.error(error);

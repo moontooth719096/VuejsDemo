@@ -37,7 +37,7 @@ function BaseApiBase(timeoutset = 3000) {
     return apiHelp;
 }
 
-function axiosGet(url, params,timeoutset = 3000) {
+function axiosGet(url, params=null,timeoutset = 3000) {
     return new Promise((resolve) => {
         let apiHelp = BaseApiBase(timeoutset);
         apiHelp.get(url, params)

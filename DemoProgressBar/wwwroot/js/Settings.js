@@ -2,6 +2,7 @@
     "BaseUrl": "https://localhost:7068/",
     "LoginCheck":"api/Auth/LoginCkeck",
     "ChatHubUri": "/ChatHub",
+    "ChatConnectListUri":"/api/ChatRoom/OnlineUser_Get",
     "GoogleLoginUri": "/api/GoogleAuth/Login",
     "YTDownloadHubUri": "/youtubeDownloadProgressHub",
     "YTDownloadPlayListGetUri": "/api/YoutubeDownload/PlayListGet",

@@ -1,4 +1,6 @@
-﻿const PageUri = {
+﻿var userinfo;
+
+const PageUri = {
     "LoginPageUri": "/Login/Login",
     "HomePage": "/"
 
@@ -47,9 +49,10 @@ function AppLogOut() {
 }
 
 function AppLogOutClear() {
-    deleteCookie("token");
-    deleteCookie("username");
-    deleteCookie("email");
-    deleteCookie("userInfo");
+    //deleteCookie("token");
+    //deleteCookie("username");
+    //deleteCookie("email");
+    //deleteCookie("userInfo");
+    userinfo = null;
     removeTokenCookie();
 }

@@ -1,6 +1,9 @@
 ﻿using DemoProgressBarAPI.Models.ChatRoom;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace DemoProgressBarAPI.Hubs
 {
@@ -10,27 +13,23 @@ namespace DemoProgressBarAPI.Hubs
         //private static List<string> _connectlist;
         private static List<ChatUser> _connectlist = new List<ChatUser>();
 
+        public IEnumerable<ChatUser> ConnectListGet() 
+        {
+            ChatUser nowUseringfo = UserInfoGet();
+            IEnumerable<ChatUser> result = _connectlist.Where(x => x.UserId != nowUseringfo.UserId);
+            return result;
+        }
+
         public override async Task OnConnectedAsync()
         {
-            string nowUserid = Context.ConnectionId;
+            string signalRconnectid = Context.ConnectionId;
+            ChatUser nowUseringfo = UserInfoGet();
 
-            List<ChatUser> nowonlineusers = new List<ChatUser>();
-            nowonlineusers.AddRange(_connectlist);
-
-            if (!_connectlist.Any(x => x.ConnectionID == nowUserid))
+            if (nowUseringfo!=null && !(_connectlist.Any(x => x.UserId == nowUseringfo.UserId)))
             {
-                ChatUser user = new ChatUser
-                {
-                    ConnectionID = nowUserid
-                };
-
-                _connectlist.Add(user);
-                await Clients.All.SendAsync("UserConnected", user);
+                _connectlist.Add(nowUseringfo);
+                await Clients.All.SendAsync("UserConnected", nowUseringfo);
             }
-
-            if (nowonlineusers != null && nowonlineusers.Count > 0)
-                await Clients.Client(nowUserid).SendAsync("OnlineList", nowonlineusers);
-
 
             await base.OnConnectedAsync();
         }
@@ -38,12 +37,15 @@ namespace DemoProgressBarAPI.Hubs
         public override async Task OnDisconnectedAsync(Exception ex)
         {
             string nowUserid = Context.ConnectionId;
-            ChatUser? user = _connectlist.SingleOrDefault(x => x.ConnectionID == nowUserid);
+            ChatUser nowUseringfo = UserInfoGet();
+            ChatUser? user = _connectlist.SingleOrDefault(x => x.UserId == nowUseringfo.UserId);
 
-            if(user!=null)
+            if (user != null)
+            {
                 _connectlist.Remove(user);
+                await Clients.All.SendAsync("UserDisconnected", nowUseringfo.UserId);
+            }
 
-            await Clients.All.SendAsync("UserDisconnected", nowUserid);
 
             await base.OnDisconnectedAsync(ex);
         }
@@ -55,13 +57,32 @@ namespace DemoProgressBarAPI.Hubs
         public async Task PrivateMessage(string sendid, string message)
         {
             string nowUserid = Context.ConnectionId;
-            ChatUser? user = _connectlist.SingleOrDefault(x=>x.ConnectionID == nowUserid);
+            ChatUser nowUseringfo = UserInfoGet();
+            ChatUser? user = _connectlist.SingleOrDefault(x=>x.UserId == nowUseringfo.UserId);
             await Clients.Client(sendid).SendAsync("PrivateMessage", user, message);
         }
 
         public IEnumerable<ChatUser> OnlineUser_Get()
         {
             return _connectlist;
+        }
+
+        private ChatUser UserInfoGet() 
+        {
+            ChatUser user = null;
+            var httpContext = Context.GetHttpContext();
+            var userIdClaim = httpContext.User.Claims;
+            if (userIdClaim != null && userIdClaim.Count()>0)
+            {
+                user = new ChatUser
+                {
+                    UserName = userIdClaim!?.FirstOrDefault(c => c.Type == "UserName") != null ? userIdClaim.FirstOrDefault(c => c.Type == "UserName").Value.ToString() : "",
+                    UserId = userIdClaim.FirstOrDefault(c => c.Type == "UserID") != null ? userIdClaim.FirstOrDefault(c => c.Type == "UserID").Value.ToString() : "",
+                    imgPath = userIdClaim.FirstOrDefault(c => c.Type == "PicturesPath") != null ? userIdClaim.FirstOrDefault(c => c.Type == "PicturesPath").Value.ToString() : "https://fakeimg.pl/80/",
+                };
+            }
+
+            return user;
         }
     }
 }

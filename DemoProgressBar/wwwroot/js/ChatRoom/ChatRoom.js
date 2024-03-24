@@ -3,7 +3,8 @@ const vm = Vue.createApp({
     data() {
         return {
             chatlist: [],//聊天對象清單
-            connectionid: null,//自己的連線ID
+            //connectionid: null,//自己的連線ID
+            nowUserinfo: null,
             signalRconnect: null,
             nowtalkid: null,//當前聊天對象ID
             talklist: [],//聊天內容清單
@@ -18,9 +19,16 @@ const vm = Vue.createApp({
         var self = this;
         const token = window.getTokenCookie();
         let ChatHubUrl = new URL(APISettings.ChatHubUri, APISettings.BaseUrl).href;
+        //self.signalRconnect = new signalR.HubConnectionBuilder()
+        //    .withUrl(ChatHubUrl, {
+        //        accessTokenFactory: () => token, // 在這裡提供標頭
+        //        headers: { "Authorization": token }
+        //    }) // 你的 SignalR Hub 地址
+        //    .withAutomaticReconnect()
+        //    .build();
         self.signalRconnect = new signalR.HubConnectionBuilder()
             .withUrl(ChatHubUrl, {
-                accessTokenFactory: () => token // 在這裡提供標頭
+                headers: { "Authorization":token }
             }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
             .build();
@@ -30,7 +38,7 @@ const vm = Vue.createApp({
         async initSigmalR(self = this) {
             await self.signalRconnect.start()
                 .then(() => {
-                    self.connectionid = self.signalRconnect.connectionId;
+                    self.getConnectList();
                     console.log('SignalR 连接已建立');
                 })
                 .catch((error) => {
@@ -40,26 +48,23 @@ const vm = Vue.createApp({
             //監聽上線者清單
             self.signalRconnect.on("OnlineList", function (onlineusers) {
                 self.chatlist = onlineusers;
-                ////將新加入的使用者新增到聊天對象清單
-                //if (onlineuser.connectionID != self.connectionid)
-                //    self.chatlist.push(onlineuser);
             });
 
             //監聽有使用者連線
             self.signalRconnect.on("UserConnected", function (onlineuser) {
                 //將新加入的使用者新增到聊天對象清單
-                if (onlineuser.connectionID != self.connectionid)
+                if (onlineuser.UserID != userinfo.UserID)
                     self.chatlist.push(onlineuser);
             });
             //監聽使用者離線
             self.signalRconnect.on("UserDisconnected", function (offlineuserid) {
                 let nowusers = self.chatlist;
                 //確認聊天對象清單是否存在該使用者
-                let user = _.find(nowusers, function (o) { return o.connectionID == offlineuserid });
+                let user = _.find(nowusers, function (o) { return o.UserID == userid });
 
                 //如果有的話就取得不包含該離線者的資料重新放入聊天對象清單
                 if (user != null && user !== undefined)
-                    self.chatlist = _.filter(nowusers, function (o) { return o.connectionID != user.connectionID; })
+                    self.chatlist = _.filter(nowusers, function (o) { return o.UserID != user.offlineuserid; })
 
                 //如果離線的是目前聊天的對象，則將當前聊天對象ID清空
                 if (self.nowtalkid == offlineuserid) {
@@ -71,35 +76,42 @@ const vm = Vue.createApp({
             self.signalRconnect.on("PrivateMessage", function (senduser, message) {
                 let nowusers = self.chatlist;
                 //抓取目前清單裡有沒有這個人
-                let user = _.find(nowusers, function (o) { return o.connectionID == senduser.connectionID });
+                let user = _.find(nowusers, function (o) { return o.UserID == senduser.UserID });
 
                 //判斷使用者清單沒有這個人就加上
                 if (user == null || user == undefined) {
                     senduser.lastMesage = message;
                     self.chatlist.push(senduser);
                 } else {
-                    if (self.nowtalkid != user.connectionID)
+                    if (self.nowtalkid != user.UserID)
                         user.noReadCount = user.noReadCount + 1;
                     user.lastMesage = message;
                 }
 
                 //將收到的訊息加到對話清單裡
-                self.addTalk(senduser.connectionID, senduser.connectionID, message);
+                self.addTalk(senduser.UserID, senduser.UserID, message);
 
 
 
                 //判斷目前沒有選擇跟任何人聊天,就給目前私訊你的人
                 if (self.nowtalkid == null || self.nowtalkid == undefined) {
-                    self.talkselect(senduser.connectionID);
+                    self.talkselect(senduser.UserID);
                 }
             });
+
+        },
+        async getConnectList() {
+            let result = await axiosGet(APISettings.ChatConnectListUri);
+            if (result !== null && result.data !== null) {
+                this.chatlist = result.data;
+            }
 
         },
         //設定要聊天的人
         talkselect(selectid) {
             this.nowtalkid = selectid;
             let nowusers = this.chatlist;
-            let user = _.find(nowusers, function (o) { return o.connectionID == selectid });
+            let user = _.find(nowusers, function (o) { return o.UserID == selectid });
             //判斷使用者清單沒有這個人就加上
             if (user != null && user != undefined) {
                 if (user.noReadCount > 0)
@@ -118,13 +130,13 @@ const vm = Vue.createApp({
                 return;
             });
 
-            let user = _.find(nowusers, function (o) { return o.connectionID == nowtalk });
+            let user = _.find(nowusers, function (o) { return o.UserID == nowtalk });
 
             if (user != null && user != undefined) {
                 user.lastMesage = this.keyonmessage;
             }
 
-            this.addTalk(this.nowtalkid, this.connectionid, this.keyonmessage);
+            this.addTalk(this.nowtalkid, userinfo.UserID, this.keyonmessage);
             // this.talklist.push({ talkid: this.nowtalkid, message: this.keyonmessage });
             this.keyonmessage = '';
         },

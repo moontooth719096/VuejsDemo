@@ -26,18 +26,14 @@ namespace DemoProgressBarAPI.Controllers
 
         [AllowAnonymous]
         [HttpPost("Login")]
-        public IActionResult Login(GoogleLoginRequest request)
+        public async Task<IActionResult> Login(GoogleLoginRequest request)
         {
             //string? formCredential = Request.Form["credential"]; //回傳憑證
             //string? formToken = Request.Form["g_csrf_token"]; //回傳令牌
             //string? cookiesToken = Request.Cookies["g_csrf_token"]; //Cookie 令牌
             try
             {
-                string JWTToken = string.Empty;
-                // 驗證 Google Token
-                JWTToken = _googleOAuthService.Verify(request.Credential).Result;
-          
-                return Ok(JWTToken);
+                return Ok(await _googleOAuthService.Verify(request.Credential));
             }
             catch (Exception ex)
             {

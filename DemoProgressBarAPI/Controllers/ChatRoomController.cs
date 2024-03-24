@@ -4,14 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace DemoProgressBarAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
   
     public class ChatRoomController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("OnlineUser_Get")]
         public IActionResult OnlineUser_Get()
         {
-
             return Ok();
         }
     }

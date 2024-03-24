@@ -1,9 +1,10 @@
-﻿using Google.Apis.Auth;
+﻿using DemoProgressBarAPI.Models.GoogleAuth;
+using Google.Apis.Auth;
 
 namespace DemoProgressBarAPI.Interfaces
 {
     public interface IGoogleOAuthService
     {
-        Task<string> Verify(string? formCredential);
+        Task<GoogleAuthVerifyResp> Verify(string? formCredential);
     }
 }

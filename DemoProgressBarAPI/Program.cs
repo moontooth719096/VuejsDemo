@@ -1,3 +1,4 @@
+using AngleSharp.Io;
 using DemoProgressBarAPI.Hubs;
 using DemoProgressBarAPI.Interfaces;
 using DemoProgressBarAPI.Models;
@@ -87,28 +88,13 @@ builder.Services.AddAuthentication(options =>
             var path = context.HttpContext.Request.Path;
             if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
             {
-                context.Token = accessToken;
+                context.HttpContext.Request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                //context.Token = accessToken;
             }
             return Task.CompletedTask;
         }
     };
 });
-//    .AddCookie()
-//    .AddGoogle(googleOptions =>
-//{
-//    googleOptions.ClientId = config["GoogleAuth:ClientID"];
-//    googleOptions.ClientSecret = config["GoogleAuth:SecretKey"];
-//});
-//builder.Services.AddCors(options =>
-//{
-//    options.AddDefaultPolicy(builder =>
-//    {
-//        builder
-//            .WithOrigins()
-//            .AllowAnyMethod()
-//            .AllowAnyHeader();
-//    });
-//});
 
 var app = builder.Build();
 

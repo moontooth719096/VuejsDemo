@@ -1,5 +1,6 @@
 ﻿using DemoProgressBarAPI.Interfaces;
 using DemoProgressBarAPI.Models;
+using DemoProgressBarAPI.Models.GoogleAuth;
 using DemoProgressBarAPI.Models.User;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Options;
@@ -27,9 +28,9 @@ namespace DemoProgressBarAPI.Services
         /// <param name="formToken"></param>
         /// <param name="cookiesToken"></param>
         /// <returns></returns>
-        public async Task<string?> Verify(string? formCredential)
+        public async Task<GoogleAuthVerifyResp> Verify(string? formCredential)
         {
-            string JWT = string.Empty;
+            GoogleAuthVerifyResp result = null;
             try
             {
                 // 檢查空值
@@ -46,15 +47,22 @@ namespace DemoProgressBarAPI.Services
                     UserID = payload.Subject,
                     PicturesPath = payload.Picture,
                 };
-                //產生自己的JWT
-                JWT = CreateJwtToken(userInfo);
+
+                if (userInfo != null)
+                {
+                    result = new GoogleAuthVerifyResp
+                    {
+                        userInfo = userInfo,
+                        JWT = CreateJwtToken(userInfo)
+                    };
+                }
             }
             catch (Exception ex)
             { 
             
             }
 
-            return JWT;
+            return result;
         }
         private async Task<Payload> GoogleVerify(string? formCredential)
         {
@@ -119,6 +127,30 @@ namespace DemoProgressBarAPI.Services
             userClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
 
             return userClaims;
+        }
+
+        public ClaimsPrincipal GetClaimsPrincipalFromToken(string token, string signingKey)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(signingKey)),
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+
+            try
+            {
+                ClaimsPrincipal principal = tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+                return principal;
+            }
+            catch (Exception ex)
+            {
+                // 处理异常
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
     }
 }
