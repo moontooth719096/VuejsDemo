@@ -1,5 +1,6 @@
 ﻿using DemoProgressBarAPI.Models.ChatRoom;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
@@ -7,18 +8,11 @@ using System.Security.Claims;
 
 namespace DemoProgressBarAPI.Hubs
 {
-    [Authorize]
+    //[Authorize]
     public class ChatHub : Hub
     {
         //private static List<string> _connectlist;
         private static List<ChatUser> _connectlist = new List<ChatUser>();
-
-        public IEnumerable<ChatUser> ConnectListGet() 
-        {
-            ChatUser nowUseringfo = UserInfoGet();
-            IEnumerable<ChatUser> result = _connectlist.Where(x => x.UserId != nowUseringfo.UserId);
-            return result;
-        }
 
         public override async Task OnConnectedAsync()
         {
@@ -28,7 +22,8 @@ namespace DemoProgressBarAPI.Hubs
             if (nowUseringfo!=null && !(_connectlist.Any(x => x.UserId == nowUseringfo.UserId)))
             {
                 _connectlist.Add(nowUseringfo);
-                await Clients.All.SendAsync("UserConnected", nowUseringfo);
+                //await Clients.All.SendAsync("UserConnected", nowUseringfo);
+                //await Clients.All.SendAsync("RefreshConnectList", _connectlist);
             }
 
             await base.OnConnectedAsync();
@@ -62,10 +57,24 @@ namespace DemoProgressBarAPI.Hubs
             await Clients.Client(sendid).SendAsync("PrivateMessage", user, message);
         }
 
-        public IEnumerable<ChatUser> OnlineUser_Get()
+        public async Task RefreshConnectList(string nowUserid = "") 
         {
-            return _connectlist;
+            if (!string.IsNullOrEmpty(nowUserid))
+            {
+                await Clients.Client(nowUserid).SendAsync("RefreshConnectList", _connectlist);
+            }
+            else 
+            {
+                await Clients.All.SendAsync("RefreshConnectList", _connectlist);
+            }
+            
         }
+
+        //public IEnumerable<ChatUser> OnlineUser_Get()
+        //{
+        //    string nowUserid = Context.ConnectionId;
+        //    return _connectlist;
+        //}
 
         private ChatUser UserInfoGet() 
         {

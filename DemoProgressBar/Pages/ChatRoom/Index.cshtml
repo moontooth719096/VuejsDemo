@@ -5,9 +5,9 @@
 <div id="app" class="row g-0 ">
     <div id="UsersBoard" class="usersboard col-1 col-md-3">
         <div class="card d-flex p-0 flex-column h-100">
-            <div class="card-header p-0 d-flex flex-row justify-content-center">
-                <img class="pic rounded-circle border-1 p-1" src="https://fakeimg.pl/30/">
-                <strong class="name col-0 text-truncate d-none d-md-block align-self-center"> {{UserName}}</strong>
+            <div class="card-header p-0 d-flex flex-row justify-content-center" >
+                <img class="pic rounded-circle border-1 p-1" :src="nowUserinfo.picturesPath">
+                <strong class="name col-0 text-truncate d-none d-md-block align-self-center">{{nowUserinfo.userName}}</strong>
             </div>
             <div class="card-body p-0 overflow-auto flex-grow-1" :model="chatlist">
                 <div class="useritem row g-0 border rounded-2 p-1"

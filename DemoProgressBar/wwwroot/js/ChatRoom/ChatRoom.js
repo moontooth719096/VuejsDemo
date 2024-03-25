@@ -13,32 +13,31 @@ const vm = Vue.createApp({
         }
     },
     created() {
-        window.LoginCheck();
+        LoginCheck();
+        this.nowUserinfo = JSON.parse(getCookie(cookiekey.userinfo));
     },
     mounted() {
         var self = this;
         const token = window.getTokenCookie();
         let ChatHubUrl = new URL(APISettings.ChatHubUri, APISettings.BaseUrl).href;
-        //self.signalRconnect = new signalR.HubConnectionBuilder()
-        //    .withUrl(ChatHubUrl, {
-        //        accessTokenFactory: () => token, // 在這裡提供標頭
-        //        headers: { "Authorization": token }
-        //    }) // 你的 SignalR Hub 地址
-        //    .withAutomaticReconnect()
-        //    .build();
         self.signalRconnect = new signalR.HubConnectionBuilder()
             .withUrl(ChatHubUrl, {
-                headers: { "Authorization":token }
+                accessTokenFactory: () => token, // 在這裡提供標頭
             }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
             .build();
+        //self.signalRconnect = new signalR.HubConnectionBuilder()
+        //    .withUrl(ChatHubUrl, {
+        //        headers: { "Authorization":token }
+        //    }) // 你的 SignalR Hub 地址
+        //    .withAutomaticReconnect()
+        //    .build();
         self.initSigmalR(self);
     },
     methods: {
         async initSigmalR(self = this) {
             await self.signalRconnect.start()
                 .then(() => {
-                    self.getConnectList();
                     console.log('SignalR 连接已建立');
                 })
                 .catch((error) => {
