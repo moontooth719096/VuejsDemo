@@ -31,9 +31,6 @@ createApp({
         this.initSignalR(this);
     },
     mounted() {
-       
-       
-       
         this.$refs.urlinput.focus();
     },
     methods: {

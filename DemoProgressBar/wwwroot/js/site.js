@@ -1,4 +1,8 @@
 ﻿let actkn = 'mg_T'
+const cookiekey = {
+    actkn: 'mg_T',
+    userinfo:'USFDM'
+}
 function setCookie(name, value, expirationTimestamp) {
     // 將時間戳記轉換為 Date 物件
     const expirationDate = new Date(expirationTimestamp);
@@ -38,21 +42,21 @@ function deleteCookie(cookieName) {
 
 //設定JWTTokenCookie
 function setTokenCookie(value, expirationTimestamp) {
-    setCookie(actkn, value, expirationTimestamp);
+    setCookie(cookiekey.actkn, value, expirationTimestamp);
 }
 function getTokenCookie() {
     return getCookie(actkn);
 }
 function getTokenCookieBearer() {
     let result = null;
-    let token = getCookie(actkn);
+    let token = getCookie(cookiekey.actkn);
     if (token)
-        result = 'Bearer ' + getCookie(actkn);
+        result = 'Bearer ' + getCookie(cookiekey.actkn);
     return result;
 }
 
 function removeTokenCookie() {
-    deleteCookie(actkn);
+    deleteCookie(cookiekey.actkn);
 }
 
 

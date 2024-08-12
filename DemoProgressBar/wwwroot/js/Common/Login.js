@@ -54,5 +54,6 @@ function AppLogOutClear() {
     //deleteCookie("email");
     //deleteCookie("userInfo");
     userinfo = null;
+    deleteCookie(cookiekey.userinfo);
     removeTokenCookie();
 }

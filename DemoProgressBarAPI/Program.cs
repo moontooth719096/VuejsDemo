@@ -88,8 +88,8 @@ builder.Services.AddAuthentication(options =>
             var path = context.HttpContext.Request.Path;
             if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
             {
-                context.HttpContext.Request.Headers.Add("Authorization", $"Bearer {accessToken}");
-                //context.Token = accessToken;
+                //context.HttpContext.Request.Headers.Add("Authorization", $"Bearer {accessToken}");
+                context.Token = accessToken;
             }
             return Task.CompletedTask;
         }

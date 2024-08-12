@@ -58,7 +58,9 @@ const vm = Vue.createApp({
 
                     result.code = 1;
                     result.JWT = response.data.jwt;
-                    userinfo = response.data.userInfo;
+                    let userinfojson = JSON.stringify(response.data.userInfo);
+                    setCookie(cookiekey.userinfo, userinfojson );
+                    //userinfo = response.data.userInfo;
                 })
                 .catch(function (error) {
                     console.error(error);
