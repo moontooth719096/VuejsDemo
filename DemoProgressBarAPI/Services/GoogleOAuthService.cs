@@ -40,6 +40,8 @@ namespace DemoProgressBarAPI.Services
                 }
 
                 GoogleJsonWebSignature.Payload? payload = await GoogleVerify(formCredential);
+                if (payload == null)
+                    return result;
                 //整理需要的資料
                 UserInfo userInfo = new UserInfo
                 {
