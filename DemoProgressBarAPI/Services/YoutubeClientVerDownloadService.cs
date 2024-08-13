@@ -8,6 +8,7 @@ using NReco.VideoConverter;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
+using System.Text.Unicode;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Playlists;
@@ -156,7 +157,7 @@ namespace DemoProgressBarAPI.Services
             }
             memoryStream.Seek(0, SeekOrigin.Begin);
 
-            return new FileStreamResult(memoryStream, System.Net.Mime.MediaTypeNames.Application.Octet);
+            return new FileStreamResult(memoryStream, System.Net.Mime.MediaTypeNames.Application.Zip);
 
         }
 

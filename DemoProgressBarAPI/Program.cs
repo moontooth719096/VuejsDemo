@@ -1,14 +1,10 @@
-using AngleSharp.Io;
 using DemoProgressBarAPI.Hubs;
 using DemoProgressBarAPI.Interfaces;
+using DemoProgressBarAPI.Middlewares;
 using DemoProgressBarAPI.Models;
 using DemoProgressBarAPI.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -47,7 +43,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 });
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTsettings"));
-builder.Services.AddSignalR();
+
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddSingleton<IYoutubeListDownloadService, YoutubeClientVerDownloadService>();
 
@@ -95,7 +91,8 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
-
+builder.Services.AddSignalR();
+//builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -108,12 +105,13 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors(builder =>
         builder
-        .WithOrigins("https://localhost:7145", "https://localhost:32768", "https://localhost:44318", "https://demoprogressbar.moon719096service.uk")
+        .WithOrigins("https://localhost:7145", "https://localhost:32768", "https://localhost:44318", "https://demoprogressbar.moon719096service.uk", "http://127.0.0.1:5173", "http://localhost:5173")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());
 
 app.UseCookiePolicy();
+//app.UseMiddleware<WebSocketsMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 

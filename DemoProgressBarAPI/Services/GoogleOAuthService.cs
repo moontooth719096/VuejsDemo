@@ -5,9 +5,11 @@ using DemoProgressBarAPI.Models.User;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using YoutubeExplode.Channels;
 using static Google.Apis.Auth.GoogleJsonWebSignature;
 
 namespace DemoProgressBarAPI.Services
@@ -20,7 +22,7 @@ namespace DemoProgressBarAPI.Services
         {
             _configuration = configuration;
             _jwt = jwt.Value;
-    }
+        }
         /// <summary>
         /// 驗證 Google Token
         /// </summary>
@@ -58,8 +60,8 @@ namespace DemoProgressBarAPI.Services
                 }
             }
             catch (Exception ex)
-            { 
-            
+            {
+
             }
 
             return result;
@@ -123,9 +125,13 @@ namespace DemoProgressBarAPI.Services
 
         private List<Claim> BuildUserClaims(UserInfo user)
         {
-            List<Claim> userClaims = user.GetType().GetProperties().Select(x=>new Claim(x.Name,x.GetValue(user)?.ToString()??string.Empty)).ToList();
+            List<Claim> userClaims = user.GetType().GetProperties().Select(x => new Claim(x.Name, x.GetValue(user)?.ToString() ?? string.Empty)).ToList();
+            //List < Claim > userClaims = new List < Claim >();
+            //userClaims.Add(new Claim(JwtRegisteredClaimNames.Name, user.UserName));
+            //userClaims.Add(new Claim(JwtRegisteredClaimNames.NameId, user.UserID));
+            //userClaims.Add(new Claim("PicturesPath", user.PicturesPath));
+            //userClaims.Add(new Claim("UserLevel", user.UserLevel.ToString()));
             userClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-
             return userClaims;
         }
 

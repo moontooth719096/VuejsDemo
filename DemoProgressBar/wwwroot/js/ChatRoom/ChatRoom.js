@@ -26,17 +26,11 @@ const vm = Vue.createApp({
             }) // 你的 SignalR Hub 地址
             .withAutomaticReconnect()
             .build();
-        //self.signalRconnect = new signalR.HubConnectionBuilder()
-        //    .withUrl(ChatHubUrl, {
-        //        headers: { "Authorization":token }
-        //    }) // 你的 SignalR Hub 地址
-        //    .withAutomaticReconnect()
-        //    .build();
         self.initSigmalR(self);
     },
     methods: {
-        async initSigmalR(self = this) {
-            await self.signalRconnect.start()
+        initSigmalR(self = this) {
+            self.signalRconnect.start()
                 .then(() => {
                     console.log('SignalR 连接已建立');
                 })
@@ -54,6 +48,10 @@ const vm = Vue.createApp({
                 //將新加入的使用者新增到聊天對象清單
                 if (onlineuser.UserID != userinfo.UserID)
                     self.chatlist.push(onlineuser);
+            });
+            self.signalRconnect.on("RefreshConnectList", function (onlinelist) {
+                let nowchatlist = onlinelist.filter(x => x.userID !== userinfo.UserID);
+                self.chatlist = nowchatlist;
             });
             //監聽使用者離線
             self.signalRconnect.on("UserDisconnected", function (offlineuserid) {
