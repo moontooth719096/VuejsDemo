@@ -105,7 +105,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors(builder =>
         builder
-        .WithOrigins("https://localhost:7145", "https://localhost:32768", "https://localhost:44318", "https://demoprogressbar.moon719096service.uk", "http://127.0.0.1:5173", "http://localhost:5173")
+        .WithOrigins("https://localhost:7145", "https://localhost:32768", "https://localhost:44318", "https://demoprogressbar.moon719096service.uk", "http://127.0.0.1:5174", "http://localhost:5173", "http://127.0.0.1:5173")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

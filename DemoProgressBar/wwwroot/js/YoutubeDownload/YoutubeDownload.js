@@ -184,7 +184,7 @@ createApp({
             let ndata = _.filter(this.SearchList, ['isCheck', true]);
             //只取id 與 title欄位
             this.SelectData = _.map(ndata, obj => _.pick(obj, ['id', 'title']));
-            let result = await axiosPost(APISettings.YoutubeDownloadUri, this.SelectData, 300000, 'blob');
+            let result = await axiosPost(APISettings.YoutubeDownloadUri, this.SelectData, 1000000, 'blob');
             if (result !== null && result.data !== null) {
                 this.downloadData(result);
             }
