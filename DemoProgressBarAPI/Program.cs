@@ -8,12 +8,18 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.RegularExpressions;
+using System.Text.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -82,7 +88,8 @@ builder.Services.AddAuthentication(options =>
 
             // 連線網址為 Hubs 相關路徑才檢查
             var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            var hubPattern = new Regex(@"^/\w+Hub$", RegexOptions.IgnoreCase);
+            if (!string.IsNullOrEmpty(accessToken) && hubPattern.IsMatch(path))
             {
                 //context.HttpContext.Request.Headers.Add("Authorization", $"Bearer {accessToken}");
                 context.Token = accessToken;
@@ -91,7 +98,14 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.EnableDetailedErrors = true;
+    //hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(2);
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(5);
+}).AddJsonProtocol(options => {
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+});
 //builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 var app = builder.Build();
 
