@@ -14,5 +14,8 @@ namespace DemoProgressBarAPI.Hubs
         {
             await Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
         }
+
+
+
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using NAudio.Wave;
 using NReco.VideoConverter;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
@@ -48,24 +49,35 @@ namespace DemoProgressBarAPI.Services
         public async IAsyncEnumerable<YotubeDownloadListViewModel> PlayListGet(string PlaylistId)
         {
             //取得youtube清單
-            IEnumerable<PlaylistVideo> MusicList = await SearchListYoutubeClientVer_Get(PlaylistId);
-            if (MusicList != null)
+            IEnumerable<PlaylistVideo> musicList = await SearchListYoutubeClientVer_Get(PlaylistId);
+            if (musicList != null)
             {
-                using (var enumerator = MusicList.GetEnumerator())
+                foreach (var value in musicList)
                 {
-                    while (enumerator.MoveNext())
+                    yield return new YotubeDownloadListViewModel
                     {
-                        PlaylistVideo value = enumerator.Current;
-                        yield return new YotubeDownloadListViewModel
-                        {
-                            IsCheck = true,
-                            Title = value.Title,
-                            Id = value.Id,
-                            ThumbnailUrl = value.Thumbnails.SingleOrDefault(Thumbnail => Thumbnail.Resolution.Area == value.Thumbnails.Max(Thumbnail => Thumbnail.Resolution.Area)).Url,
-                            PlayTime = value.Duration.ToString()
-                        };
-                    }
+                        IsCheck = true,
+                        Title = value.Title,
+                        Id = value.Id,
+                        ThumbnailUrl = value?.Thumbnails?.SingleOrDefault(thumbnail => thumbnail.Resolution.Area == value.Thumbnails.Max(thumbnail => thumbnail.Resolution.Area))?.Url,
+                        PlayTime = value.Duration.ToString()
+                    };
                 }
+                //using (var enumerator = MusicList.GetEnumerator())
+                //{
+                //    while (enumerator.MoveNext())
+                //    {
+                //        PlaylistVideo value = enumerator.Current;
+                //        yield return new YotubeDownloadListViewModel
+                //        {
+                //            IsCheck = true,
+                //            Title = value.Title,
+                //            Id = value.Id,
+                //            ThumbnailUrl = value.Thumbnails.SingleOrDefault(Thumbnail => Thumbnail.Resolution.Area == value.Thumbnails.Max(Thumbnail => Thumbnail.Resolution.Area)).Url,
+                //            PlayTime = value.Duration.ToString()
+                //        };
+                //    }
+                //}
             }
         }
 
@@ -74,8 +86,8 @@ namespace DemoProgressBarAPI.Services
         {
             APIResponseModel result = new APIResponseModel { Code = 1 };
             List<Task> downloadList = new List<Task>();
-            List<MP4Streaminfo> Vedios = new List<MP4Streaminfo>();
-            List<SelectDataModel> Dolist = SelectData.OrderBy(x => x.id).ToList();
+            List<MP4Streaminfo> videos = new List<MP4Streaminfo>();
+            List<SelectDataModel> doList = SelectData.OrderBy(x => x.id).ToList();
             string Token = DateTime.Now.ToString("yyyyMMddHHmmssffff");
             string folderPath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "YoutubeDonload", Token);
 
@@ -83,16 +95,16 @@ namespace DemoProgressBarAPI.Services
             FileCheck(folderPath);
 
             int Takecount = 5;
-            double TotalCount = Dolist.Count();
+            double totalCount = doList.Count();
             string message = $"音樂下載中";
             double percentage = 0;
             
-            while (Dolist.Count() > 0)
+            while (doList.Count() > 0)
             {
-                IEnumerable<SelectDataModel> nowlist = Dolist.Take(Takecount);
+                IEnumerable<SelectDataModel> nowlist = doList.Take(Takecount);
                 Action updateProgress = async () =>
                 {
-                    percentage = 100 - (Math.Round((Dolist.Count() / TotalCount) * 100));
+                    percentage = 100 - (Math.Round((doList.Count() / totalCount) * 100));
                     await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
                 };
                 foreach (var searchResult in nowlist)
@@ -103,31 +115,46 @@ namespace DemoProgressBarAPI.Services
                     //移除windows不允許的檔名字元
                     filename = Regex.Replace(filename, "[\\/:*?\"<>|]", "");
                     // 保存 MP3 文件
-                    //var outPath = Path.Combine(folderPath, filename);
                     filename = filename.Replace(" ", "");
 
-                    downloadList.Add(Task.Run(async () => {
-                        MP4Streaminfo vedioinfo = await VedioStream_Get(searchResult.VideoId, folderPath, filename);
-                        if(vedioinfo!=null)
-                            Vedios.Add(vedioinfo);
-                        updateProgress();
-                    }));
+                    downloadList.Add(DownloadAndConvertVideo(searchResult, folderPath, filename, videos, message, totalCount, doList.Count));
 
                 }
                 await Task.WhenAll(downloadList);
-                Dolist.RemoveRange(0, nowlist.Count());
-                //downloadList.EX.Exception.InnerExceptions.Select(o => o.Message).ToArray());
-
+                doList.RemoveRange(0, nowlist.Count());
             }
 
             percentage = 100;
             await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
 
             //轉換mp4toMP3
-            await ConvertToMP3(Vedios);
+            await ConvertToMP3(videos);
 
             return await ZipDownloadFile(Token, folderPath);
         }
+
+        private async Task DownloadAndConvertVideo(SelectDataModel searchResult, string folderPath, string filename, List<MP4Streaminfo> videos, string message, double totalCount, int remainingCount)
+        {
+            try
+            {
+                MP4Streaminfo videoInfo = await VedioStream_Get(searchResult.VideoId, folderPath, filename);
+                if (videoInfo != null)
+                    videos.Add(videoInfo);
+                await UpdateProgress(message, totalCount, remainingCount);
+            }
+            catch (Exception ex)
+            {
+                // 記錄異常信息
+                Console.WriteLine($"下載 {filename} 發生錯誤: {ex.Message}");
+            }
+        }
+
+        private async Task UpdateProgress(string message, double totalCount, int remainingCount)
+        {
+            double percentage = 100 - (Math.Round((remainingCount / totalCount) * 100));
+            await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
+        }
+
         private async Task<IActionResult> ZipDownloadFile(string Token, string tragePath)
         {
             string zipFileName = $"compressed-files-{Token}.zip";

@@ -56,7 +56,7 @@ namespace DemoProgressBarAPI.Hubs
             if(senduser !=null)
                 await Clients.Client(senduser.ConnectionID).SendAsync("PrivateMessage", user, message);
         }
-
+ 
         public async Task RefreshConnectList(string nowUserid = "") 
         {
             if (!string.IsNullOrEmpty(nowUserid))
