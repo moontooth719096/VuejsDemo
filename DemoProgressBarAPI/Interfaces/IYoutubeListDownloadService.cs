@@ -7,6 +7,6 @@ namespace DemoProgressBarAPI.Interfaces
     {
         IAsyncEnumerable<YotubeDownloadListViewModel> PlayListGet(string PlaylistId);
         IAsyncEnumerable<YotubeDownloadListViewModel> VideoGet(string VideoID);
-        Task<IActionResult> DownloadApp(IEnumerable<SelectDataModel> SelectData);
+        Task<string> DownloadApp(DownloadModel downloadData);
     }
 }

@@ -28,15 +28,19 @@ namespace DemoProgressBarAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Download(IEnumerable<SelectDataModel> SelectData)
+        public async Task<IActionResult> Download(DownloadModel downloadData)
         {
             try
             {
-                return await _youtubeservice.DownloadApp(SelectData);
+                string connectionid = User?.FindFirst("UserID")?.Value;
+                downloadData.ConnectionId = connectionid;
+                await _youtubeservice.DownloadApp(downloadData);
+
+                return Ok();
             }
             catch(Exception ex)
             {
-                return Ok();
+                return BadRequest();
             }
         }
     }

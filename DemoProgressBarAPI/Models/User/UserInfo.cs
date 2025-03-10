@@ -6,5 +6,6 @@
         public string UserName { get; set; }
         public string PicturesPath { get; set; }
         public int UserLevel { get; set; }
+        public string ConnectionID { get; set; }
     }
 }

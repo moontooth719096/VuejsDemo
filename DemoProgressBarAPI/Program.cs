@@ -3,6 +3,7 @@ using DemoProgressBarAPI.Interfaces;
 using DemoProgressBarAPI.Middlewares;
 using DemoProgressBarAPI.Models;
 using DemoProgressBarAPI.Services;
+using DemoProgressBarAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
@@ -106,7 +107,8 @@ builder.Services.AddSignalR(hubOptions =>
 }).AddJsonProtocol(options => {
     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
 });
-//builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
