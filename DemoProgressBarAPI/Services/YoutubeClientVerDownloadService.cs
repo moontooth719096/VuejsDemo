@@ -1,17 +1,12 @@
 ﻿using DemoProgressBarAPI.Hubs;
 using DemoProgressBarAPI.Interfaces;
-using DemoProgressBarAPI.Models.User;
 using DemoProgressBarAPI.Models.YoutubeDonload;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using NAudio.Wave;
-using Newtonsoft.Json.Linq;
 using NReco.VideoConverter;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
-using System.Text.Unicode;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Playlists;
@@ -109,13 +104,14 @@ namespace DemoProgressBarAPI.Services
                 await Task.WhenAll(downloadList);
                 doList.RemoveRange(0, nowList.Count());
                 percentage = 100 - (Math.Round((doList.Count / totalCount) * 100));
-                await UpdateProgress(connectionid, message, percentage).ConfigureAwait(false);
+                await UpdateProgress(connectionid, message, percentage);
             }
             await ConvertToMP3(connectionid, videos);
-            await UpdateProgress(connectionid, "檔案壓縮中", 99).ConfigureAwait(false);
-            await ZipDownloadFile(token, folderPath);
+            await UpdateProgress(connectionid, "檔案壓縮中", 99);
+            string zipFileName = $"compressed-files-{token}.zip";
+            await ZipDownloadFile(zipFileName, folderPath);
             // 通知前端任務完成
-            await _youtubeDownloadProgressHub.Clients.Client(connectionid).SendAsync("YoutubeDownloadCompleted", $"/YoutubeDonloadZIP/compressed-files-{token}.zip");
+            await _youtubeDownloadProgressHub.Clients.User(connectionid).SendAsync("YoutubeDownloadCompleted", zipFileName, $"/YoutubeDonloadZIP/compressed-files-{token}.zip");
         }
 
         private async Task DownloadAndConvertVideo(SelectDataModel searchResult, string folderPath, string filename, List<MP4Streaminfo> videos)
@@ -135,12 +131,11 @@ namespace DemoProgressBarAPI.Services
 
         private async Task UpdateProgress(string connectionID, string message, double percentage)
         {
-            await _youtubeDownloadProgressHub.Clients.Client(connectionID).SendAsync("YoutubeDownloadProgress", message, percentage).ConfigureAwait(false);
+            await _youtubeDownloadProgressHub.Clients.User(connectionID).SendAsync("YoutubeDownloadProgress", message, percentage);
         }
 
-        private async Task<IActionResult> ZipDownloadFile(string Token, string tragePath)
+        private async Task<IActionResult> ZipDownloadFile(string zipFileName, string tragePath)
         {
-            string zipFileName = $"compressed-files-{Token}.zip";
             string zipFilePath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "YoutubeDonloadZIP");
             string AllzipFilePath = Path.Combine(zipFilePath, zipFileName);
 
@@ -272,6 +267,7 @@ namespace DemoProgressBarAPI.Services
             double TotalCount = vodeos.Count();
             double percentage = 0;
             //var Convert = new NReco.VideoConverter.FFMpegConverter();
+            await UpdateProgress(connectionid, message, 0);
             List<Task> tasks = new List<Task>();
             foreach (MP4Streaminfo vedio in vodeos)
             {
@@ -290,7 +286,7 @@ namespace DemoProgressBarAPI.Services
                         vidtask.Wait();
                         count++;
                         percentage = Math.Round((count / TotalCount) * 100);
-                        await UpdateProgress(connectionid, message, percentage).ConfigureAwait(false);
+                        await UpdateProgress(connectionid, message, percentage);
                         //await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
                         await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。").ConfigureAwait(false);
                     }));
