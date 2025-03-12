@@ -1,4 +1,5 @@
 ﻿using DemoProgressBarAPI.Models.ChatRoom;
+using DemoProgressBarAPI.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
@@ -6,15 +7,15 @@ using System.Security.Claims;
 namespace DemoProgressBarAPI.Hubs
 {
     [Authorize]
-    public class ChatHub : Hub
+    public class ChatHub : HubBase
     {
         //private static List<string> _connectlist;
         private static List<ChatUser> _connectlist = new List<ChatUser>();
 
         public override async Task OnConnectedAsync()
         {
-           
-            ChatUser nowUseringfo = UserInfoGet();
+
+            UserInfo nowUseringfo = UserInfoGet();
 
             if (nowUseringfo!=null)
             {
@@ -22,7 +23,7 @@ namespace DemoProgressBarAPI.Hubs
                 {
                     _connectlist.Remove(_connectlist.Single(x => x.UserID == nowUseringfo.UserID));
                 }
-                _connectlist.Add(nowUseringfo);
+                _connectlist.Add(new ChatUser(nowUseringfo));
                 await Clients.All.SendAsync("RefreshConnectList", _connectlist);
             }
        
@@ -75,36 +76,5 @@ namespace DemoProgressBarAPI.Hubs
         {
             return await Task.FromResult(_connectlist);
         }
-
-        //取得使用者資訊
-        private ChatUser UserInfoGet() 
-        {
-            ChatUser user = null;
-            //取得目前連線id
-            string signalRconnectid = Context.ConnectionId;
-            var httpContext = Context.GetHttpContext();
-            //取得JWT內使用者資訊
-            var userIdClaim = httpContext.User.Claims;
-            //var claims = ((ClaimsIdentity)Context.User.Identity).Claims;
-            if (userIdClaim != null && userIdClaim.Count()>0)
-            {
-                user = new ChatUser
-                {
-                    UserName = userIdClaim!?.FirstOrDefault(c => c.Type == "UserName") != null ? userIdClaim.FirstOrDefault(c => c.Type == "UserName").Value.ToString() : "",
-                    UserID = userIdClaim.FirstOrDefault(c => c.Type == "UserID") != null ? userIdClaim.FirstOrDefault(c => c.Type == "UserID").Value.ToString() : "",
-                    PicturesPath = userIdClaim.FirstOrDefault(c => c.Type == "PicturesPath") != null ? userIdClaim.FirstOrDefault(c => c.Type == "PicturesPath").Value.ToString() : "https://fakeimg.pl/80/",
-                    ConnectionID = signalRconnectid
-                };
-            }
-
-            return user;
-        }
-
-        //private IEnumerable<ChatUser> GetNowConnectedUsers() {
-        //    foreach (var user in Clients.All.)
-        //    { 
-            
-        //    }
-        //}
     }
 }

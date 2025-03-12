@@ -3,8 +3,10 @@ using DemoProgressBarAPI.Interfaces;
 using DemoProgressBarAPI.Middlewares;
 using DemoProgressBarAPI.Models;
 using DemoProgressBarAPI.Services;
+using DemoProgressBarAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -106,7 +108,8 @@ builder.Services.AddSignalR(hubOptions =>
 }).AddJsonProtocol(options => {
     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
 });
-//builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -129,9 +132,15 @@ app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "YoutubeDonloadZIP")),
+    RequestPath = "/YoutubeDonloadZIP"
+});
+
 app.MapControllers();
-app.MapHub<DemoHub>("/DownloadHub");
 app.MapHub<ChatHub>("/ChatHub");
-app.MapHub<YoutubeDownloadProgressHub>("/youtubeDownloadProgressHub");
+app.MapHub<YoutubeDownloadProgressHub>("/YoutubeDownloadProgressHub");
 
 app.Run();

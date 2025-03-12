@@ -5,11 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using NAudio.Wave;
 using NReco.VideoConverter;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
-using System.Text.Unicode;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Playlists;
@@ -63,84 +60,67 @@ namespace DemoProgressBarAPI.Services
                         PlayTime = value.Duration.ToString()
                     };
                 }
-                //using (var enumerator = MusicList.GetEnumerator())
-                //{
-                //    while (enumerator.MoveNext())
-                //    {
-                //        PlaylistVideo value = enumerator.Current;
-                //        yield return new YotubeDownloadListViewModel
-                //        {
-                //            IsCheck = true,
-                //            Title = value.Title,
-                //            Id = value.Id,
-                //            ThumbnailUrl = value.Thumbnails.SingleOrDefault(Thumbnail => Thumbnail.Resolution.Area == value.Thumbnails.Max(Thumbnail => Thumbnail.Resolution.Area)).Url,
-                //            PlayTime = value.Duration.ToString()
-                //        };
-                //    }
-                //}
             }
         }
 
-
-        public async Task<IActionResult> DownloadApp(IEnumerable<SelectDataModel> SelectData)
+        public async Task<string> DownloadApp(DownloadModel downloadData)
         {
-            APIResponseModel result = new APIResponseModel { Code = 1 };
+            if (string.IsNullOrEmpty(downloadData.ConnectionId))
+                throw new Exception("connectionid is empty");
+
+            string token = DateTime.Now.ToString("yyyyMMddHHmmssffff");
+            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "YoutubeDonload", token);
+
+            // 檢查文件夾是否存在
+            FileCheck(folderPath);
+            
+            // 將下載和壓縮的工作移到後台任務中
+            _ = Task.Run(async () => await ProcessDownloadAndCompression(downloadData.ConnectionId, downloadData.SelectData, folderPath, token));
+
+            // 返回任務ID給前端
+            return token;
+        }
+
+        private async Task ProcessDownloadAndCompression(string connectionid,IEnumerable<SelectDataModel> SelectData, string folderPath, string token)
+        {
             List<Task> downloadList = new List<Task>();
             List<MP4Streaminfo> videos = new List<MP4Streaminfo>();
             List<SelectDataModel> doList = SelectData.OrderBy(x => x.id).ToList();
-            string Token = DateTime.Now.ToString("yyyyMMddHHmmssffff");
-            string folderPath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "YoutubeDonload", Token);
-
-            // 检查文件夹是否存在
-            FileCheck(folderPath);
-
-            int Takecount = 5;
+            int takeCount = 5;
             double totalCount = doList.Count();
-            string message = $"音樂下載中";
+            string message = "音樂下載中";
             double percentage = 0;
-            
-            while (doList.Count() > 0)
+
+            while (doList.Count > 0)
             {
-                IEnumerable<SelectDataModel> nowlist = doList.Take(Takecount);
-                Action updateProgress = async () =>
+                IEnumerable<SelectDataModel> nowList = doList.Take(takeCount);
+                foreach (var searchResult in nowList)
                 {
-                    percentage = 100 - (Math.Round((doList.Count() / totalCount) * 100));
-                    await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
-                };
-                foreach (var searchResult in nowlist)
-                {
-                    
                     string filename = $"{searchResult.Title}.mp4";
-                    
-                    //移除windows不允許的檔名字元
-                    filename = Regex.Replace(filename, "[\\/:*?\"<>|]", "");
-                    // 保存 MP3 文件
-                    filename = filename.Replace(" ", "");
+                    filename = Regex.Replace(filename, "[\\/:*?\"<>|]", "").Replace(" ", "");
 
-                    downloadList.Add(DownloadAndConvertVideo(searchResult, folderPath, filename, videos, message, totalCount, doList.Count));
-
+                    downloadList.Add(DownloadAndConvertVideo(searchResult, folderPath, filename, videos));
                 }
                 await Task.WhenAll(downloadList);
-                doList.RemoveRange(0, nowlist.Count());
+                doList.RemoveRange(0, nowList.Count());
+                percentage = 100 - (Math.Round((doList.Count / totalCount) * 100));
+                await UpdateProgress(connectionid, message, percentage);
             }
-
-            percentage = 100;
-            await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
-
-            //轉換mp4toMP3
-            await ConvertToMP3(videos);
-
-            return await ZipDownloadFile(Token, folderPath);
+            await ConvertToMP3(connectionid, videos);
+            await UpdateProgress(connectionid, "檔案壓縮中", 99);
+            string zipFileName = $"compressed-files-{token}.zip";
+            await ZipDownloadFile(zipFileName, folderPath);
+            // 通知前端任務完成
+            await _youtubeDownloadProgressHub.Clients.User(connectionid).SendAsync("YoutubeDownloadCompleted", zipFileName, $"/YoutubeDonloadZIP/compressed-files-{token}.zip");
         }
 
-        private async Task DownloadAndConvertVideo(SelectDataModel searchResult, string folderPath, string filename, List<MP4Streaminfo> videos, string message, double totalCount, int remainingCount)
+        private async Task DownloadAndConvertVideo(SelectDataModel searchResult, string folderPath, string filename, List<MP4Streaminfo> videos)
         {
             try
             {
                 MP4Streaminfo videoInfo = await VedioStream_Get(searchResult.VideoId, folderPath, filename);
                 if (videoInfo != null)
                     videos.Add(videoInfo);
-                await UpdateProgress(message, totalCount, remainingCount);
             }
             catch (Exception ex)
             {
@@ -149,15 +129,13 @@ namespace DemoProgressBarAPI.Services
             }
         }
 
-        private async Task UpdateProgress(string message, double totalCount, int remainingCount)
+        private async Task UpdateProgress(string connectionID, string message, double percentage)
         {
-            double percentage = 100 - (Math.Round((remainingCount / totalCount) * 100));
-            await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
+            await _youtubeDownloadProgressHub.Clients.User(connectionID).SendAsync("YoutubeDownloadProgress", message, percentage);
         }
 
-        private async Task<IActionResult> ZipDownloadFile(string Token, string tragePath)
+        private async Task<IActionResult> ZipDownloadFile(string zipFileName, string tragePath)
         {
-            string zipFileName = $"compressed-files-{Token}.zip";
             string zipFilePath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "YoutubeDonloadZIP");
             string AllzipFilePath = Path.Combine(zipFilePath, zipFileName);
 
@@ -282,13 +260,14 @@ namespace DemoProgressBarAPI.Services
             return nowkbps;
         }
 
-        private async Task ConvertToMP3(List<MP4Streaminfo> vodeos)
+        private async Task ConvertToMP3(string connectionid,List<MP4Streaminfo> vodeos)
         {
             string message = "格式轉換中";
             int count = 0;
             double TotalCount = vodeos.Count();
             double percentage = 0;
             //var Convert = new NReco.VideoConverter.FFMpegConverter();
+            await UpdateProgress(connectionid, message, 0);
             List<Task> tasks = new List<Task>();
             foreach (MP4Streaminfo vedio in vodeos)
             {
@@ -307,20 +286,22 @@ namespace DemoProgressBarAPI.Services
                         vidtask.Wait();
                         count++;
                         percentage = Math.Round((count / TotalCount) * 100);
-
-                        await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
-                        await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。");
+                        await UpdateProgress(connectionid, message, percentage);
+                        //await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
+                        await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。").ConfigureAwait(false);
                     }));
-                    await Task.WhenAll(tasks);
+                   
 
                 }
                 catch (Exception ex)
                 {
 
                 }
-                percentage = 100;
-                await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
+                
+                //percentage = 100;
+                //await UpdateProgress(connectionid, message, percentage);
             }
+            await Task.WhenAll(tasks);
         }
          
     }

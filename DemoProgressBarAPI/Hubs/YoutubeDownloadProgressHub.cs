@@ -1,21 +1,23 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DemoProgressBarAPI.Models.ChatRoom;
+using DemoProgressBarAPI.Models.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections.Concurrent;
 
 namespace DemoProgressBarAPI.Hubs
 {
-    public class YoutubeDownloadProgressHub : Hub
+    [Authorize]
+    public class YoutubeDownloadProgressHub : HubBase
     {
+        //private static ConcurrentDictionary<string, UserInfo> _connentUser = new ConcurrentDictionary<string, UserInfo>();
         public override async Task OnConnectedAsync()
         {
-            Console.WriteLine(Context.ConnectionId);
             await base.OnConnectedAsync();
         }
-        public async Task SendProgressUpdate(string message, int percentage)
+
+        public override Task OnDisconnectedAsync(Exception? exception)
         {
-            await Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
+            return base.OnDisconnectedAsync(exception);
         }
-
-
-
     }
 }
