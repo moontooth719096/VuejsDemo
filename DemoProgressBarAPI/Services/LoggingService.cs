@@ -5,32 +5,41 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Microsoft.Extensions.Hosting;
+using DemoProgressBarAPI.Models.Log;
 
 namespace DemoProgressBarAPI.Services
 {
     public class LoggingService
     {
-        private readonly string _logFilePath;
-        private readonly string _logfilename;
+        //"logs", "log.txt"
+        private readonly string _logFilePath="logs";
+        private readonly string _logfilename= "log.txt";
         private string _folderPath;
         private string _filePath;
+        private readonly IHostEnvironment _env;
 
-        public LoggingService(string logFilePath,string logfilename)
+        public LoggingService(IHostEnvironment env)
         {
-            _logFilePath = logFilePath;
-            _logfilename = logfilename;
-
+            _env = env;
             _folderPath = Path.Combine(Directory.GetCurrentDirectory(), _logFilePath);
             _filePath = Path.Combine(_folderPath, _logfilename);
         }
 
-        public void Log(string message)
+        public void Log(string message, string userid = "", LogLevel loglevel = LogLevel.Information)
         {
             try
             {
+                // 如果不是開發環境且log等級是Debug，則不紀錄
+                if (!_env.IsDevelopment() && loglevel == LogLevel.Debug)
+                {
+                    return;
+                }
+
                 // 檢查文件夾是否存在
                 FileCheck(_folderPath);
-                var logMessage = $"{DateTime.Now}: {message}";
+
+                var logMessage = $"{DateTime.Now},{userid},{loglevel.ToString()},{message}";
                 File.AppendAllText(_filePath, logMessage + Environment.NewLine);
 
             }
@@ -55,18 +64,19 @@ namespace DemoProgressBarAPI.Services
             {
                 if (File.Exists(_filePath))
                 {
-                    var logContents = await File.ReadAllLinesAsync(_filePath);
-                    var logEntryPattern = new Regex(@"^(?<timestamp>.+?): (?<message>.+)$");
+                    string[] logContents = await File.ReadAllLinesAsync(_filePath);
 
                     foreach (var logLine in logContents)
                     {
-                        var match = logEntryPattern.Match(logLine);
-                        if (match.Success)
+                        if (!string.IsNullOrEmpty(logLine))
                         {
+                            string[] strings = logLine.Split(',');
                             logEntries.Add(new LogEntry
                             {
-                                Timestamp = DateTime.Parse(match.Groups["timestamp"].Value),
-                                Message = match.Groups["message"].Value
+                                Timestamp = DateTime.Parse(strings[0]),
+                                UserID = strings[1],
+                                LogLevel = strings[2],
+                                Message = strings[3]
                             });
                         }
                     }
@@ -84,11 +94,5 @@ namespace DemoProgressBarAPI.Services
             }
             return logEntries;
         }
-    }
-
-    public class LogEntry
-    {
-        public DateTime Timestamp { get; set; }
-        public string Message { get; set; }
     }
 }

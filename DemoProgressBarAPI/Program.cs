@@ -58,11 +58,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 });
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTsettings"));
-    
 
+builder.Services.AddSingleton<LoggingService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddSingleton<IYoutubeListDownloadService, YoutubeClientVerDownloadService>();
-builder.Services.AddSingleton(new LoggingService("logs", "log.txt"));
+
 
 var config = builder.Configuration; // Use the builder.Configuration directly
 builder.Services.AddAuthentication(options =>
