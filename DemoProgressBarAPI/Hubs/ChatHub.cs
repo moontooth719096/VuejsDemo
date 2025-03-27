@@ -30,8 +30,6 @@ namespace DemoProgressBarAPI.Hubs
                     _connectlist.Remove(_connectlist.Single(x => x.UserID == nowUseringfo.UserID));
                 }
                 _connectlist.Add(new ChatUser(nowUseringfo));
-                    
-                _loggingService.Log($"Client connected，{nowUseringfo.UserName}");
                 await Clients.All.SendAsync("RefreshConnectList", _connectlist);
             }
 

@@ -43,7 +43,7 @@ namespace DemoProgressBarAPI.Controllers
                 downloadData.ConnectionId = connectionid;
                 await _youtubeservice.DownloadApp(downloadData);
 
-                _loggingService.Log("YoutubeDownloadController Download method called.");
+                //_loggingService.Log("YoutubeDownloadController Download method called.");
 
                 return Ok();
             }
