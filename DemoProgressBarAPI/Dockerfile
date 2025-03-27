@@ -6,6 +6,9 @@ EXPOSE 8080
 EXPOSE 443
 ENV ASPNETCORE_ENVIRONMENT=Production
 
+# ¦w¸Ë ffmpeg
+RUN apt-get update && apt-get install -y ffmpeg
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["DemoProgressBarAPI/DemoProgressBarAPI.csproj", "DemoProgressBarAPI/"]

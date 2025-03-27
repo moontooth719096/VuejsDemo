@@ -4,7 +4,7 @@ using DemoProgressBarAPI.Models.YoutubeDonload;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using NAudio.Wave;
-using NReco.VideoConverter;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using YoutubeExplode;
@@ -262,48 +262,95 @@ namespace DemoProgressBarAPI.Services
             return nowkbps;
         }
 
-        private async Task ConvertToMP3(string connectionid,List<MP4Streaminfo> vodeos)
+        private async Task ConvertToMP3(string connectionid, List<MP4Streaminfo> videos)
         {
             string message = "格式轉換中";
             int count = 0;
-            double TotalCount = vodeos.Count();
+            double TotalCount = videos.Count();
             double percentage = 0;
-            //var Convert = new NReco.VideoConverter.FFMpegConverter();
             await UpdateProgress(connectionid, message, 0);
             List<Task> tasks = new List<Task>();
-            foreach (MP4Streaminfo vedio in vodeos)
+            foreach (MP4Streaminfo video in videos)
             {
-                var settings = new ConvertSettings
-                {
-                    AudioCodec = "mp3",
-                    CustomOutputArgs = $"-b:a {vedio.Kbps}k"
-                };
-
                 tasks.Add(Task.Run(async () => {
                     try
                     {
-                        var Convert = new NReco.VideoConverter.FFMpegConverter();
-                        var vidtask = Convert.ConvertLiveMedia(vedio.MP4Stream, null, vedio.OutputPath, null, settings);
-                        vidtask.Start();
-                        vidtask.Wait();
+                        string arguments = $"-i pipe:0 -b:a {video.Kbps}k \"{video.OutputPath}\"";
+                        var processStartInfo = new ProcessStartInfo
+                        {
+                            FileName = "ffmpeg",
+                            Arguments = arguments,
+                            RedirectStandardInput = true,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            UseShellExecute = false,
+                            CreateNoWindow = true
+                        };
+
+                        using (var process = new Process { StartInfo = processStartInfo })
+                        {
+                            process.Start();
+                            await video.MP4Stream.CopyToAsync(process.StandardInput.BaseStream);
+                            process.StandardInput.Close();
+                            await process.WaitForExitAsync();
+                        }
+
                         count++;
                         percentage = Math.Round((count / TotalCount) * 100);
                         await UpdateProgress(connectionid, message, percentage);
-                        //await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
-                        await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。").ConfigureAwait(false);
+                        await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {video.OutputPath}。").ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.Log($"轉檔發生異常：{vedio.OutputPath} 發生錯誤: {ex.ToString()}");
+                        _loggingService.Log($"轉檔發生異常：{video.OutputPath} 發生錯誤: {ex.ToString()}");
                     }
-                    
                 }));
-                
-                //percentage = 100;
-                //await UpdateProgress(connectionid, message, percentage);
             }
             await Task.WhenAll(tasks);
         }
-         
+
+        //private async Task ConvertToMP3(string connectionid,List<MP4Streaminfo> vodeos)
+        //{
+        //    string message = "格式轉換中";
+        //    int count = 0;
+        //    double TotalCount = vodeos.Count();
+        //    double percentage = 0;
+        //    //var Convert = new NReco.VideoConverter.FFMpegConverter();
+        //    await UpdateProgress(connectionid, message, 0);
+        //    List<Task> tasks = new List<Task>();
+        //    foreach (MP4Streaminfo vedio in vodeos)
+        //    {
+        //        var settings = new ConvertSettings
+        //        {
+        //            AudioCodec = "mp3",
+        //            CustomOutputArgs = $"-b:a {vedio.Kbps}k"
+        //        };
+
+        //        tasks.Add(Task.Run(async () => {
+        //            try
+        //            {
+        //                var Convert = new NReco.VideoConverter.FFMpegConverter();
+        //                var vidtask = Convert.ConvertLiveMedia(vedio.MP4Stream, null, vedio.OutputPath, null, settings);
+        //                vidtask.Start();
+        //                vidtask.Wait();
+        //                count++;
+        //                percentage = Math.Round((count / TotalCount) * 100);
+        //                await UpdateProgress(connectionid, message, percentage);
+        //                //await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
+        //                await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。").ConfigureAwait(false);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                _loggingService.Log($"轉檔發生異常：{vedio.OutputPath} 發生錯誤: {ex.ToString()}");
+        //            }
+
+        //        }));
+
+        //        //percentage = 100;
+        //        //await UpdateProgress(connectionid, message, percentage);
+        //    }
+        //    await Task.WhenAll(tasks);
+        //}
+
     }
 }

@@ -120,6 +120,20 @@ builder.Services.AddSignalR(hubOptions =>
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 var app = builder.Build();
 
+// Ensure required directories exist
+var directoriesToCreate = new[]
+{
+    Path.Combine(Directory.GetCurrentDirectory(), "YoutubeDonloadZIP")
+};
+
+foreach (var dir in directoriesToCreate)
+{
+    if (!Directory.Exists(dir))
+    {
+        Directory.CreateDirectory(dir);
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 { 
@@ -143,12 +157,12 @@ app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.UseStaticFiles(new StaticFileOptions
-//{
-//    FileProvider = new PhysicalFileProvider(
-//        Path.Combine(Directory.GetCurrentDirectory(), "YoutubeDonloadZIP")),
-//    RequestPath = "/YoutubeDonloadZIP"
-//});
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "YoutubeDonloadZIP")),
+    RequestPath = "/YoutubeDonloadZIP"
+});
 
 app.MapControllers();
 app.MapHub<ChatHub>("/ChatHub");
