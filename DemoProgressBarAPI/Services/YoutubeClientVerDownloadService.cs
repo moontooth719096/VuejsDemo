@@ -19,10 +19,15 @@ namespace DemoProgressBarAPI.Services
     {
         private readonly YoutubeClient _youtubeclient;
         private readonly IHubContext<YoutubeDownloadProgressHub> _youtubeDownloadProgressHub;
-        public YoutubeClientVerDownloadService(IHubContext<YoutubeDownloadProgressHub> youtubeDownloadProgressHub)
+        private readonly LoggingService _loggingService;
+
+        public YoutubeClientVerDownloadService(
+            IHubContext<YoutubeDownloadProgressHub> youtubeDownloadProgressHub
+            , LoggingService loggingService)
         {
             _youtubeDownloadProgressHub = youtubeDownloadProgressHub;
             _youtubeclient = new YoutubeClient();
+            _loggingService = loggingService;
         }
 
         public async IAsyncEnumerable<YotubeDownloadListViewModel> VideoGet(string VideoID)
@@ -125,7 +130,7 @@ namespace DemoProgressBarAPI.Services
             catch (Exception ex)
             {
                 // 記錄異常信息
-                Console.WriteLine($"下載 {filename} 發生錯誤: {ex.Message}");
+                _loggingService.Log($"下載 {filename} 發生錯誤: {ex.ToString()}");
             }
         }
 
@@ -149,8 +154,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-
-
+                _loggingService.Log($"壓縮 {zipFileName} 發生錯誤: {ex.ToString()}");
             }
           
 
@@ -177,8 +181,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-
-
+                _loggingService.Log($"查詢VedioID：{VedioID} 發生錯誤: {ex.ToString()}");
             }
             return Result;
 
@@ -194,8 +197,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-
-
+                _loggingService.Log($"查詢PlaylistId：{PlaylistId} 發生錯誤: {ex.ToString()}");
             }
             return Result;
 
@@ -230,7 +232,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"下載 {filename} 發生錯誤");
+                _loggingService.Log($"下載 {filename} 發生錯誤：{ex}");
             }
             return null;
         }
@@ -277,9 +279,9 @@ namespace DemoProgressBarAPI.Services
                     CustomOutputArgs = $"-b:a {vedio.Kbps}k"
                 };
 
-                try
-                {
-                    tasks.Add(Task.Run(async () => {
+                tasks.Add(Task.Run(async () => {
+                    try
+                    {
                         var Convert = new NReco.VideoConverter.FFMpegConverter();
                         var vidtask = Convert.ConvertLiveMedia(vedio.MP4Stream, null, vedio.OutputPath, null, settings);
                         vidtask.Start();
@@ -289,14 +291,13 @@ namespace DemoProgressBarAPI.Services
                         await UpdateProgress(connectionid, message, percentage);
                         //await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
                         await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。").ConfigureAwait(false);
-                    }));
-                   
-
-                }
-                catch (Exception ex)
-                {
-
-                }
+                    }
+                    catch (Exception ex)
+                    {
+                        _loggingService.Log($"轉檔發生異常：{vedio.OutputPath} 發生錯誤: {ex.ToString()}");
+                    }
+                    
+                }));
                 
                 //percentage = 100;
                 //await UpdateProgress(connectionid, message, percentage);

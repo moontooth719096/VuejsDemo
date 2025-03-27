@@ -1,5 +1,6 @@
 ﻿using DemoProgressBarAPI.Interfaces;
 using DemoProgressBarAPI.Models.YoutubeDonload;
+using DemoProgressBarAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,20 +12,26 @@ namespace DemoProgressBarAPI.Controllers
     public class YoutubeDownloadController : ControllerBase
     {
         private readonly IYoutubeListDownloadService _youtubeservice;
-       
-        public YoutubeDownloadController(IYoutubeListDownloadService youtubeservice)
+        private readonly LoggingService _loggingService;
+
+        public YoutubeDownloadController(IYoutubeListDownloadService youtubeservice, LoggingService loggingService)
         {
             _youtubeservice = youtubeservice;
+            _loggingService = loggingService;
         }
+
         [HttpGet]
         public IActionResult VideoGet(string VideoID)
         {
-          return  Ok(_youtubeservice.VideoGet(VideoID));
+            _loggingService.Log("YoutubeDownloadController VideoGet method called.");
+            return Ok(_youtubeservice.VideoGet(VideoID));
         }
+
         [HttpGet]
         public IActionResult PlayListGet(string PlaylistId)
         {
-          return  Ok(_youtubeservice.PlayListGet(PlaylistId));
+            _loggingService.Log("YoutubeDownloadController PlayListGet method called.");
+            return Ok(_youtubeservice.PlayListGet(PlaylistId));
         }
 
         [HttpPost]
@@ -36,10 +43,13 @@ namespace DemoProgressBarAPI.Controllers
                 downloadData.ConnectionId = connectionid;
                 await _youtubeservice.DownloadApp(downloadData);
 
+                _loggingService.Log("YoutubeDownloadController Download method called.");
+
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
+                _loggingService.Log($"YoutubeDownloadController Download method failed: {ex.Message}");
                 return BadRequest();
             }
         }

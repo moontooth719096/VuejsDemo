@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using static DemoProgressBarAPI.Controllers.GoogleAuthController;
+using DemoProgressBarAPI.Services;
 
 namespace DemoProgressBarAPI.Controllers
 {
@@ -12,6 +13,13 @@ namespace DemoProgressBarAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+        private readonly LoggingService _loggingService;
+
+        public AuthController(LoggingService loggingService)
+        {
+            _loggingService = loggingService;
+        }
+
         [HttpGet("LoginCkeck")]
         public IActionResult LoginCkeck()
         {

@@ -1,4 +1,5 @@
 ﻿using DemoProgressBarAPI.Interfaces;
+using DemoProgressBarAPI.Services;
 using Google.Apis.Auth;
 using Google.Apis.Http;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,12 @@ namespace DemoProgressBarAPI.Controllers
     public class GoogleAuthController : ControllerBase
     {
         private readonly IGoogleOAuthService _googleOAuthService;
+        private readonly LoggingService _loggingService;
 
-        public GoogleAuthController(IGoogleOAuthService googleOAuthService)
+        public GoogleAuthController(IGoogleOAuthService googleOAuthService, LoggingService loggingService)
         {
             _googleOAuthService = googleOAuthService;
+            _loggingService = loggingService;
         }
         public class GoogleLoginRequest
         {
@@ -40,6 +43,5 @@ namespace DemoProgressBarAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
     }
 }

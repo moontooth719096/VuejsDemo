@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
@@ -17,6 +19,10 @@ using System.Text.Unicode;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())  // 設定基礎目錄
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)  // 主設定檔
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true) // 環境設定檔
+    .AddEnvironmentVariables(); // 允許環境變數覆蓋設定 // Ensure environment variables are loaded first
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -51,11 +57,13 @@ builder.Services.AddSwaggerGen(options =>
 });
 });
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTsettings"));
+    
 
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddSingleton<IYoutubeListDownloadService, YoutubeClientVerDownloadService>();
+builder.Services.AddSingleton(new LoggingService("logs", "log.txt"));
 
-var config = builder.Configuration;
+var config = builder.Configuration; // Use the builder.Configuration directly
 builder.Services.AddAuthentication(options =>
 {
     //// This forces challenge results to be handled by Google OpenID Handler, so there's no
@@ -104,7 +112,7 @@ builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.EnableDetailedErrors = true;
     //hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(2);
-    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(5);
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
 }).AddJsonProtocol(options => {
     options.PayloadSerializerOptions.PropertyNamingPolicy = null;
 });
@@ -114,15 +122,18 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
-{
+{ 
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
+// 判斷是否為 Linux
+if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors(builder =>
         builder
-        .WithOrigins("https://localhost:7145", "https://localhost:32768", "https://localhost:44318", "https://demoprogressbar.moon719096service.uk", "http://127.0.0.1:5174", "http://localhost:5173", "http://127.0.0.1:5173")
+        .WithOrigins("https://localhost:7145", "https://demoprogressbar.moon719096service.uk", "http://127.0.0.1:5174", "http://localhost:5173")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());
@@ -132,12 +143,12 @@ app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "YoutubeDonloadZIP")),
-    RequestPath = "/YoutubeDonloadZIP"
-});
+//app.UseStaticFiles(new StaticFileOptions
+//{
+//    FileProvider = new PhysicalFileProvider(
+//        Path.Combine(Directory.GetCurrentDirectory(), "YoutubeDonloadZIP")),
+//    RequestPath = "/YoutubeDonloadZIP"
+//});
 
 app.MapControllers();
 app.MapHub<ChatHub>("/ChatHub");
