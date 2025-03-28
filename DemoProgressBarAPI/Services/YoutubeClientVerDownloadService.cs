@@ -56,7 +56,7 @@ namespace DemoProgressBarAPI.Services
             {
                 foreach (var value in musicList)
                 {
-                    yield return new YotubeDownloadListViewModel
+                     yield return new YotubeDownloadListViewModel
                     {
                         IsCheck = true,
                         Title = value.Title,
