@@ -26,6 +26,23 @@ namespace DemoProgressBarAPI.Controllers
             return Ok();
         }
 
+        //[HttpGet("v2/LoginCkeck")]
+        //public IActionResult LoginCkeckV2()
+        //{
+        //    var userId = User?.FindFirst("UserID")?.Value;
+        //    var userLevel = userId == "101349011586052745096" ? 99 : 0;
+
+        //    var userInfo = new UserInfo
+        //    {
+        //        UserID = userId,
+        //        UserName = User.FindFirst("UserName")?.Value,
+        //        PicturesPath = User.FindFirst("PicturesPath")?.Value,
+        //        UserLevel = userLevel
+        //    };
+
+        //    return Ok(userInfo);
+        //}
+
         [HttpGet("v2/LoginCkeck")]
         public IActionResult LoginCkeckV2()
         {

@@ -130,7 +130,7 @@ namespace DemoProgressBarAPI.Services
             catch (Exception ex)
             {
                 // 記錄異常信息
-                _loggingService.Log($"下載 {filename} 發生錯誤: {ex.ToString()}");
+                _loggingService.ApiLog($"下載 {filename} 發生錯誤: {ex.ToString()}",LogLevel.Error);
             }
         }
 
@@ -154,7 +154,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-                _loggingService.Log($"壓縮 {zipFileName} 發生錯誤: {ex.ToString()}");
+                _loggingService.ApiLog($"壓縮 {zipFileName} 發生錯誤: {ex.ToString()}");
             }
           
 
@@ -181,7 +181,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-                _loggingService.Log($"查詢VedioID：{VedioID} 發生錯誤: {ex.ToString()}");
+                _loggingService.ApiLog($"查詢VedioID：{VedioID} 發生錯誤: {ex.ToString()}", LogLevel.Error);
             }
             return Result;
 
@@ -197,7 +197,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-                _loggingService.Log($"查詢PlaylistId：{PlaylistId} 發生錯誤: {ex.ToString()}");
+                _loggingService.ApiLog($"查詢PlaylistId：{PlaylistId} 發生錯誤: {ex.ToString()}",LogLevel.Error);
             }
             return Result;
 
@@ -232,7 +232,7 @@ namespace DemoProgressBarAPI.Services
             }
             catch (Exception ex)
             {
-                _loggingService.Log($"下載 {filename} 發生錯誤：{ex}");
+                _loggingService.ApiLog($"下載 {filename} 發生錯誤：{ex}", LogLevel.Error);
             }
             return null;
         }
@@ -302,7 +302,7 @@ namespace DemoProgressBarAPI.Services
                     }
                     catch (Exception ex)
                     {
-                        _loggingService.Log($"轉檔發生異常：{video.OutputPath} 發生錯誤: {ex.ToString()}");
+                        _loggingService.ApiLog($"轉檔發生異常：{video.OutputPath} 發生錯誤: {ex.ToString()}", LogLevel.Error);
                     }
                 }));
             }

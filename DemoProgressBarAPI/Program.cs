@@ -5,6 +5,7 @@ using DemoProgressBarAPI.Models;
 using DemoProgressBarAPI.Services;
 using DemoProgressBarAPI.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -57,11 +58,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 });
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTsettings"));
-    
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<LoggingService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddSingleton<IYoutubeListDownloadService, YoutubeClientVerDownloadService>();
-builder.Services.AddSingleton(new LoggingService("logs", "log.txt"));
+
 
 var config = builder.Configuration; // Use the builder.Configuration directly
 builder.Services.AddAuthentication(options =>
@@ -118,6 +120,15 @@ builder.Services.AddSignalR(hubOptions =>
 });
 
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireUserLevel99", policy =>
+        policy.Requirements.Add(new UserLevelRequirement(99)));
+});
+
+builder.Services.AddSingleton<IAuthorizationHandler, UserLevelHandler>();
+
 var app = builder.Build();
 
 // Ensure required directories exist
@@ -153,7 +164,6 @@ app.UseCors(builder =>
         .AllowCredentials());
 
 app.UseCookiePolicy();
-//app.UseMiddleware<WebSocketsMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -165,6 +175,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.MapControllers();
+
 app.MapHub<ChatHub>("/ChatHub");
 app.MapHub<YoutubeDownloadProgressHub>("/YoutubeDownloadProgressHub");
 
