@@ -59,6 +59,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTsettings"));
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<LoggingService>();
 builder.Services.AddScoped<IGoogleOAuthService, GoogleOAuthService>();
 builder.Services.AddSingleton<IYoutubeListDownloadService, YoutubeClientVerDownloadService>();

@@ -7,26 +7,33 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
 using DemoProgressBarAPI.Models.Log;
+using Microsoft.AspNetCore.Http;
+using DemoProgressBarAPI.Models.Enums;
 
 namespace DemoProgressBarAPI.Services
 {
     public class LoggingService
     {
-        //"logs", "log.txt"
-        private readonly string _logFilePath="logs";
-        private readonly string _logfilename= "log.txt";
+        private readonly string _logFilePath = "logs";
+        private readonly string _logfilename = "log.txt";
         private string _folderPath;
         private string _filePath;
         private readonly IHostEnvironment _env;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LoggingService(IHostEnvironment env)
+        public LoggingService(IHostEnvironment env, IHttpContextAccessor httpContextAccessor)
         {
             _env = env;
+            _httpContextAccessor = httpContextAccessor;
             _folderPath = Path.Combine(Directory.GetCurrentDirectory(), _logFilePath);
             _filePath = Path.Combine(_folderPath, _logfilename);
         }
 
-        public void Log(string message, string userid = "", LogLevel loglevel = LogLevel.Information)
+        public void ApiLog(string message, LogLevel loglevel = LogLevel.Information)
+        {
+            Log(message, CallEndEnum.Demoapp2Backend, loglevel);
+        }
+        public void Log(string message, CallEndEnum callend, LogLevel loglevel = LogLevel.Information)
         {
             try
             {
@@ -39,13 +46,14 @@ namespace DemoProgressBarAPI.Services
                 // 檢查文件夾是否存在
                 FileCheck(_folderPath);
 
-                var logMessage = $"{DateTime.Now},{userid},{loglevel.ToString()},{message}";
+                var userId = _httpContextAccessor.HttpContext?.User?.FindFirst("UserID")?.Value ?? "";
+                var logMessage = $"{DateTime.Now}|{userId}|{loglevel.ToString()}|{message}|{callend.ToString()}";
                 File.AppendAllText(_filePath, logMessage + Environment.NewLine);
 
             }
             catch (Exception ex)
-            { 
-            
+            {
+
             }
         }
 
@@ -70,13 +78,14 @@ namespace DemoProgressBarAPI.Services
                     {
                         if (!string.IsNullOrEmpty(logLine))
                         {
-                            string[] strings = logLine.Split(',');
+                            string[] strings = logLine.Split('|');
                             logEntries.Add(new LogEntry
                             {
                                 Timestamp = DateTime.Parse(strings[0]),
                                 UserID = strings[1],
-                                LogLevel = strings[2],
-                                Message = strings[3]
+                                LogLevel = Enum.TryParse<LogLevel>(strings[2], out LogLevel logLevel) ? logLevel : LogLevel.None,
+                                Message = strings[3],
+                                CallEnd = Enum.TryParse<CallEndEnum>(strings[4], out CallEndEnum callend) ? callend : CallEndEnum.None,
                             });
                         }
                     }

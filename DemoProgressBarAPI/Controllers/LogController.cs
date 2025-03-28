@@ -1,8 +1,7 @@
+using DemoProgressBarAPI.Models.Log;
 using DemoProgressBarAPI.Services;
-using DemoProgressBarAPI.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DemoProgressBarAPI.Controllers
 {
@@ -23,6 +22,13 @@ namespace DemoProgressBarAPI.Controllers
         {
             var logEntries = await _loggingService.ReadLogAsync();
             return Ok(logEntries);
+        }
+
+        [HttpPost("write")]
+        public IActionResult WriteLog([FromBody] LogRequest logRequest)
+        {
+            _loggingService.Log(logRequest.Message, logRequest.CallEnd, logRequest.LogLevel);
+            return Ok();
         }
     }
 }

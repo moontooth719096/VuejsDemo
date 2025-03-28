@@ -46,7 +46,7 @@ namespace DemoProgressBarAPI.Hubs
                 _connectlist.Remove(user);
                 await Clients.All.SendAsync("UserDisconnected", nowUseringfo.UserID);
             }
-            _loggingService.Log($"Client Disconnected，{nowUseringfo.UserName}");
+            _loggingService.ApiLog($"Client Disconnected，{nowUseringfo.UserName}");
             await base.OnDisconnectedAsync(ex);
         }
 

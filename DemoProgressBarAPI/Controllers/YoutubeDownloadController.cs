@@ -23,14 +23,12 @@ namespace DemoProgressBarAPI.Controllers
         [HttpGet]
         public IActionResult VideoGet(string VideoID)
         {
-            _loggingService.Log("YoutubeDownloadController VideoGet method called.");
             return Ok(_youtubeservice.VideoGet(VideoID));
         }
 
         [HttpGet]
         public IActionResult PlayListGet(string PlaylistId)
         {
-            _loggingService.Log("YoutubeDownloadController PlayListGet method called.");
             return Ok(_youtubeservice.PlayListGet(PlaylistId));
         }
 
@@ -43,13 +41,11 @@ namespace DemoProgressBarAPI.Controllers
                 downloadData.ConnectionId = connectionid;
                 await _youtubeservice.DownloadApp(downloadData);
 
-                //_loggingService.Log("YoutubeDownloadController Download method called.");
-
                 return Ok();
             }
             catch (Exception ex)
             {
-                _loggingService.Log($"YoutubeDownloadController Download method failed: {ex.Message}");
+                _loggingService.ApiLog($"YoutubeDownloadController Download method failed: {ex.Message}",LogLevel.Error);
                 return BadRequest();
             }
         }
