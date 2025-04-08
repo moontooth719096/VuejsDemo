@@ -20,6 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Discord.Net.Core" Version="3.17.2" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="3.17.2" />
     <PackageReference Include="Google.Apis.Auth" Version="1.64.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />

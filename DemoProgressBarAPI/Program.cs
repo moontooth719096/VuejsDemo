@@ -128,6 +128,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, UserLevelHandler>();
+builder.Services.AddSingleton(new DiscordService(config["Discord:BotID"],config["Discord:Token"]));
 
 var app = builder.Build();
 
