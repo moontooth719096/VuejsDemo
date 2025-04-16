@@ -6,6 +6,8 @@
         public string UserName { get; set; }
         public string PicturesPath { get; set; }
         public int UserLevel { get; set; }
-        public string ConnectionID { get; set; }
+        public string ThirdPlatform { get; set; }
+        public string ThirdToken { get; set; }
+        //public string ConnectionID { get; set; }
     }
 }

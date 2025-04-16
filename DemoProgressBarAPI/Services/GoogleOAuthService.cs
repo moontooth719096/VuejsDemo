@@ -50,6 +50,8 @@ namespace DemoProgressBarAPI.Services
                     UserName = payload.Name,
                     UserID = payload.Subject,
                     PicturesPath = payload.Picture,
+                    ThirdPlatform = "Google",
+                    ThirdToken = formCredential
                 };
 
                 if (userInfo != null)

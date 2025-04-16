@@ -15,7 +15,6 @@ namespace DemoProgressBarAPI.Models.ChatRoom
             UserName = userinfo.UserName;
             PicturesPath = userinfo.PicturesPath;
             UserLevel = userinfo.UserLevel;
-            ConnectionID = userinfo.ConnectionID;
         }
     }
 }

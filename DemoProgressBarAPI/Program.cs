@@ -128,6 +128,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, UserLevelHandler>();
+builder.Services.AddHttpClient<LinePayService>();
+
 
 var app = builder.Build();
 
