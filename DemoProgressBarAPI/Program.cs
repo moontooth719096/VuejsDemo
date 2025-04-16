@@ -20,10 +20,10 @@ using System.Text.Unicode;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())  // ³]©w°òÂ¦¥Ø¿ı
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)  // ¥D³]©wÀÉ
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true) // Àô¹Ò³]©wÀÉ
-    .AddEnvironmentVariables(); // ¤¹³\Àô¹ÒÅÜ¼ÆÂĞ»\³]©w // Ensure environment variables are loaded first
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())  // è¨­å®šåŸºç¤ç›®éŒ„
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)  // ä¸»è¨­å®šæª”
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true) // ç’°å¢ƒè¨­å®šæª”
+    .AddEnvironmentVariables(); // å…è¨±ç’°å¢ƒè®Šæ•¸è¦†è“‹è¨­å®š // Ensure environment variables are loaded first
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
@@ -95,10 +95,10 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            // SignalR ·|±N Token ¥H°Ñ¼Æ¦WºÙ access_token ªº¤è¦¡©ñ¦b URL ¬d¸ß°Ñ¼Æ¸Ì
+            // SignalR æœƒå°‡ Token ä»¥åƒæ•¸åç¨± access_token çš„æ–¹å¼æ”¾åœ¨ URL æŸ¥è©¢åƒæ•¸è£¡
             var accessToken = context.Request.Query["access_token"];
 
-            // ³s½uºô§}¬° Hubs ¬ÛÃö¸ô®|¤~ÀË¬d
+            // é€£ç·šç¶²å€ç‚º Hubs ç›¸é—œè·¯å¾‘æ‰æª¢æŸ¥
             var path = context.HttpContext.Request.Path;
             var hubPattern = new Regex(@"^/\w+Hub$", RegexOptions.IgnoreCase);
             if (!string.IsNullOrEmpty(accessToken) && hubPattern.IsMatch(path))
@@ -128,6 +128,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, UserLevelHandler>();
+builder.Services.AddHttpClient<LinePayService>();
 builder.Services.AddSingleton(new DiscordService(config["Discord:BotID"],config["Discord:Token"]));
 
 var app = builder.Build();
@@ -152,7 +153,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-// §PÂ_¬O§_¬° Linux
+// åˆ¤æ–·æ˜¯å¦ç‚º Linux
 if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 {
     app.UseHttpsRedirection();
