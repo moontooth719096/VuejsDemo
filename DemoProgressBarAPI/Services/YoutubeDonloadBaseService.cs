@@ -8,9 +8,10 @@ namespace DemoProgressBarAPI.Services
         public void FileCheck(string folderPath)
         {
             // 检查文件夹是否存在
-            if (!Directory.Exists(folderPath))
+            if (!Directory.Exists(folderPath)) { 
                 // 如果文件夹不存在，则创建新文件夹
                 Directory.CreateDirectory(folderPath);
+            }
         }
         public void ConvertToMp3(Stream sourceFile, string outputFilePath)
         {

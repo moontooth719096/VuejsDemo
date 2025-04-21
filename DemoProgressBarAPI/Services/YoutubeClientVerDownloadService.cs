@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using NAudio.Wave;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using YoutubeExplode;
@@ -78,15 +79,15 @@ namespace DemoProgressBarAPI.Services
 
             // 檢查文件夾是否存在
             FileCheck(folderPath);
-            
+            bool isgoogledl = downloadData.Mode==1?false:true;
             // 將下載和壓縮的工作移到後台任務中
-            _ = Task.Run(async () => await ProcessDownloadAndCompression(downloadData.ConnectionId, downloadData.SelectData, folderPath, token));
+            _ = Task.Run(async () => await ProcessDownloadAndCompression(isgoogledl,downloadData.ConnectionId, downloadData.SelectData, folderPath, token, downloadData.GAuthToken, downloadData.SelectFileID));
 
             // 返回任務ID給前端
             return token;
         }
 
-        private async Task ProcessDownloadAndCompression(string connectionid,IEnumerable<SelectDataModel> SelectData, string folderPath, string token)
+        private async Task ProcessDownloadAndCompression(bool isgoogleDL,  string connectionid,IEnumerable<SelectDataModel> SelectData, string folderPath, string token,string gauthtoken = "",string selectfileid="")
         {
             List<Task> downloadList = new List<Task>();
             List<MP4Streaminfo> videos = new List<MP4Streaminfo>();
@@ -111,12 +112,19 @@ namespace DemoProgressBarAPI.Services
                 percentage = 100 - (Math.Round((doList.Count / totalCount) * 100));
                 await UpdateProgress(connectionid, message, percentage);
             }
+
             await ConvertToMP3(connectionid, videos);
             await UpdateProgress(connectionid, "檔案壓縮中", 99);
             string zipFileName = $"compressed-files-{token}.zip";
-            await ZipDownloadFile(zipFileName, folderPath);
-            // 通知前端任務完成
-            await _youtubeDownloadProgressHub.Clients.User(connectionid).SendAsync("YoutubeDownloadCompleted", zipFileName, $"/YoutubeDonloadZIP/compressed-files-{token}.zip");
+           string zipfilepath =  await ZipDownloadFile(zipFileName, folderPath);
+
+            if (isgoogleDL)
+            {
+                await UploadToGoogleDrive(zipfilepath, zipFileName, gauthtoken, selectfileid);
+            }
+
+            await _youtubeDownloadProgressHub.Clients.User(connectionid).SendAsync("YoutubeDownloadCompleted", zipFileName, $"/YoutubeDonloadZIP/{zipFileName}");
+           
         }
 
         private async Task DownloadAndConvertVideo(SelectDataModel searchResult, string folderPath, string filename, List<MP4Streaminfo> videos)
@@ -139,7 +147,7 @@ namespace DemoProgressBarAPI.Services
             await _youtubeDownloadProgressHub.Clients.User(connectionID).SendAsync("YoutubeDownloadProgress", message, percentage);
         }
 
-        private async Task<IActionResult> ZipDownloadFile(string zipFileName, string tragePath)
+        private async Task<string> ZipDownloadFile(string zipFileName, string tragePath)
         {
             string zipFilePath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), "YoutubeDonloadZIP");
             string AllzipFilePath = Path.Combine(zipFilePath, zipFileName);
@@ -156,17 +164,18 @@ namespace DemoProgressBarAPI.Services
             {
                 _loggingService.ApiLog($"壓縮 {zipFileName} 發生錯誤: {ex.ToString()}");
             }
-          
+
 
             // 构建响应，将zip文件提供给客户端下载
-            var memoryStream = new MemoryStream();
-            using (var fs = new FileStream(AllzipFilePath, FileMode.Open))
-            {
-                await fs.CopyToAsync(memoryStream);
-            }
-            memoryStream.Seek(0, SeekOrigin.Begin);
+            //var memoryStream = new MemoryStream();
+            //using (var fs = new FileStream(AllzipFilePath, FileMode.Open))
+            //{
+            //    await fs.CopyToAsync(memoryStream);
+            //}
+            //memoryStream.Seek(0, SeekOrigin.Begin);
 
-            return new FileStreamResult(memoryStream, System.Net.Mime.MediaTypeNames.Application.Zip);
+            //return new FileStreamResult(memoryStream, System.Net.Mime.MediaTypeNames.Application.Zip);
+            return AllzipFilePath;
 
         }
 
@@ -309,48 +318,55 @@ namespace DemoProgressBarAPI.Services
             await Task.WhenAll(tasks);
         }
 
-        //private async Task ConvertToMP3(string connectionid,List<MP4Streaminfo> vodeos)
-        //{
-        //    string message = "格式轉換中";
-        //    int count = 0;
-        //    double TotalCount = vodeos.Count();
-        //    double percentage = 0;
-        //    //var Convert = new NReco.VideoConverter.FFMpegConverter();
-        //    await UpdateProgress(connectionid, message, 0);
-        //    List<Task> tasks = new List<Task>();
-        //    foreach (MP4Streaminfo vedio in vodeos)
-        //    {
-        //        var settings = new ConvertSettings
-        //        {
-        //            AudioCodec = "mp3",
-        //            CustomOutputArgs = $"-b:a {vedio.Kbps}k"
-        //        };
+        private async Task UploadToGoogleDrive(string zipfilePath, string fileName, string authToken, string folderId)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    // 設定 Authorization 標頭
+                    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
 
-        //        tasks.Add(Task.Run(async () => {
-        //            try
-        //            {
-        //                var Convert = new NReco.VideoConverter.FFMpegConverter();
-        //                var vidtask = Convert.ConvertLiveMedia(vedio.MP4Stream, null, vedio.OutputPath, null, settings);
-        //                vidtask.Start();
-        //                vidtask.Wait();
-        //                count++;
-        //                percentage = Math.Round((count / TotalCount) * 100);
-        //                await UpdateProgress(connectionid, message, percentage);
-        //                //await _youtubeDownloadProgressHub.Clients.All.SendAsync("YoutubeDownloadProgress", message, percentage);
-        //                await Console.Out.WriteLineAsync($"已保存 MP3 文件至 {vedio.OutputPath}。").ConfigureAwait(false);
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                _loggingService.Log($"轉檔發生異常：{vedio.OutputPath} 發生錯誤: {ex.ToString()}");
-        //            }
+                    // 建立檔案元數據
+                    var metadata = new
+                    {
+                        name = fileName,
+                        parents = new[] { folderId }
+                    };
 
-        //        }));
+                    // 建立 Multipart 請求
+                    using (var content = new MultipartFormDataContent())
+                    {
+                        // 添加元數據
+                        var metadataContent = new StringContent(System.Text.Json.JsonSerializer.Serialize(metadata));
+                        metadataContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
+                        content.Add(metadataContent, "metadata");
+                        // 添加檔案內容
+                        var fileContent = new StreamContent(new FileStream(zipfilePath, FileMode.Open));
+                        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/zip");
+                        content.Add(fileContent, "file");
 
-        //        //percentage = 100;
-        //        //await UpdateProgress(connectionid, message, percentage);
-        //    }
-        //    await Task.WhenAll(tasks);
-        //}
+                        // 發送請求
+                        var response = await httpClient.PostAsync("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", content);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var responseBody = await response.Content.ReadAsStringAsync();
+                            Console.WriteLine($"檔案已成功上傳: {responseBody}");
+                        }
+                        else
+                        {
+                            var errorContent = await response.Content.ReadAsStringAsync();
+                            Console.WriteLine($"檔案上傳失敗: {errorContent}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _loggingService.ApiLog($"上傳到 Google Drive 發生錯誤: {ex.ToString()}", LogLevel.Error);
+            }
+        }
 
     }
 }
