@@ -160,7 +160,7 @@ if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
 }
 app.UseCors(builder =>
         builder
-        .WithOrigins("https://localhost:7145", "https://demoprogressbar.moon719096service.uk", "http://127.0.0.1:5174", "http://localhost:5173")
+        .WithOrigins("https://localhost:7145", "https://demoprogressbar.moon719096service.uk", "http://127.0.0.1:5174", "http://localhost:5173", "http://localhost:10001")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

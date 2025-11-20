@@ -51,7 +51,9 @@ namespace DemoProgressBarAPI.Controllers
                 UserID = User?.FindFirst("UserID")?.Value,
                 UserName = User.FindFirst("UserName")?.Value,
                 PicturesPath = User.FindFirst("PicturesPath")?.Value,
-                UserLevel = int.TryParse(User.FindFirst("UserLevel")?.Value, out int level) ? level : 0
+                UserLevel = int.TryParse(User.FindFirst("UserLevel")?.Value, out int level) ? level : 0,
+                ThirdPlatform = User.FindFirst("ThirdPlatform")?.Value,
+                ThirdToken = User.FindFirst("ThirdToken")?.Value
             };
 
             return Ok(userInfo);
