@@ -1,6 +1,4 @@
-﻿using DemoProgressBarAPI.Interfaces;
-using DemoProgressBarAPI.Models.Discord;
-using DemoProgressBarAPI.Models.YoutubeDonload;
+﻿using DemoProgressBarAPI.Models.Discord;
 using DemoProgressBarAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
