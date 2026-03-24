@@ -36,6 +36,6 @@ jobs:
           context: ${{ env.CONTEXT_PATH }}
           file: ${{ env.DOCKERFILE_PATH }}
           push: true
-          tags: ${{ env.IMAGE_NAME }}:dev
+          tags: ${{ env.IMAGE_NAME }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
